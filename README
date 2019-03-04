@@ -1,0 +1,25 @@
+Project Structure for IDE's:
+
+
+src:
+	chess Package:
+		IChessModel(interface)
+		IChessPiece(interface)
+		Move
+		Player(enum)
+
+	W19Project3 Directory:
+		contains all png's needed for chess pieces
+
+	W19Project3GIVETOSTUDENTS Package:
+		ChessGUI
+		ChessModel
+		ChessPanel
+		GUIcodes(enum)
+		
+		Bishop
+		King
+		Knight
+		Pawn
+		Queen
+		Rook
