@@ -18,6 +18,7 @@ public abstract class ChessPiece implements IChessPiece {
 		return owner;
 	}
 
+
 	public boolean isValidMove(Move move, IChessPiece[][] board) {
 		boolean valid = false;
 
@@ -25,6 +26,10 @@ public abstract class ChessPiece implements IChessPiece {
 		
 		if (((move.fromRow == move.toRow) && (move.fromColumn == move.toColumn)) == false)
 			return valid;
+		//if you move on a chess piece of your own invalid move
+
+
+
 
 		return false;
 	}
