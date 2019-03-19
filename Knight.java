@@ -11,22 +11,40 @@ public class Knight extends ChessPiece {
 	}
 
 	public String type() {
-		return "W19Project3GIVETOSTUDENTS.Knight";
+
+	    return "W19Project3GIVETOSTUDENTS.Knight";
 	}
 
 	public boolean isValidMove(Move move, IChessPiece[][] board){
 
 		boolean valid = true;
+
 		//Knight move algorithm:
         //Any case for L moves that move in the y axis: left or right col move
-        if(move.fromRow - 2 == move.toRow || move.toRow + 2 == move.toRow) {
-           if((move.fromColumn + 1 == move.toColumn) || move.fromColumn - 1 == move.toColumn) {
-               return valid;
-           }
-        }
-        else if (move.fromColumn - 2 == move.toColumn || move.toColumn + 2 == move.toColumn) {
-            if(move.toRow - 2 == move.toRow || move.toRow + 2 == move.toRow) {
-                return valid;
+
+        if(move.fromRow + 2 == move.toRow) {
+            if(move.fromColumn + 1 == move.toColumn) {
+                return true;
+            } else if(move.fromColumn - 1 == move.toColumn) {
+                return true;
+            }
+        }else if(move.fromRow - 2 == move.toRow) {
+            if(move.fromColumn - 1 == move.toColumn) {
+                return true;
+            } else if (move.fromColumn + 1 == move.toColumn) {
+                return true;
+            }
+        }else if(move.fromColumn - 2 == move.toColumn) {
+            if(move.fromRow - 1 == move.toRow) {
+                return true;
+            } else if (move.fromRow + 1 == move.toRow) {
+                return true;
+            }
+        }else if(move.fromColumn + 2 == move.toColumn) {
+            if(move.fromRow - 1 == move.toRow) {
+                return true;
+            } else if (move.fromRow + 1 == move.toRow) {
+                return true;
             }
         }
         return false;
