@@ -1,7 +1,6 @@
 package W19Project3GIVETOSTUDENTS;
 
-import chess.Move;
-import chess.Player;
+import chess.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -15,7 +14,6 @@ public class ChessPanel extends JPanel {
 
     private JButton[][] board;
     private ChessModel model;
-
 
     private ImageIcon wRook, wBishop, wQueen, wKing, wPawn, wKnight;
     private ImageIcon bRook, bBishop, bQueen, bKing, bPawn, bKnight;
@@ -198,6 +196,14 @@ public class ChessPanel extends JPanel {
         }
         repaint();
     }
+    //Work on when reaching step 9*
+    public boolean inCheck() {
+        return false;
+    }
+    public boolean isComplete() {
+        return false;
+    }
+    //*
 
     // inner class that represents action listener for buttons
     private class listener implements ActionListener {

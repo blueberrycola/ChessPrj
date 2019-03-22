@@ -13,9 +13,7 @@ public class Rook extends ChessPiece {
 	}
 
 	public String type() {
-		
 		return "W19Project3GIVETOSTUDENTS.Rook";
-		
 	}
 	
 	// determines if the move is valid for a rook piece
@@ -26,15 +24,19 @@ public class Rook extends ChessPiece {
         for(int i = 0; i < 8; i++) {
 			// Allowed directions: Right, Up, Left, Down
         	if(move.fromRow + i == move.toRow && move.fromColumn == move.toColumn) {
-				return valid;
+				System.out.println(move.toString());
+        		return valid;
 			}
+
 			if(move.fromRow == move.toRow && move.fromColumn + i == move.toColumn) {
+				System.out.println(move.toString());
 				return valid;
 			}
 			if(move.fromRow - i == move.toRow && move.fromColumn == move.toColumn) {
 				return valid;
 			}
 			if(move.fromRow == move.toRow && move.fromColumn - i == move.toColumn) {
+				System.out.println(move.toString());
 				return valid;
 			}
 		}

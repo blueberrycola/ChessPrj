@@ -4,14 +4,14 @@ import chess.*;
 
 public class ChessModel implements IChessModel {
     private IChessPiece[][] board;
-	private Player player, playerTwo;
+	private Player player;
 
 	// declare other instance variables as needed
 
 	public ChessModel() {
 		board = new IChessPiece[8][8];
 		player = Player.WHITE;
-		playerTwo = Player.BLACK;
+
 
         board[7][0] = new Rook(Player.WHITE);
         board[7][1] = new Knight(Player.WHITE);
@@ -22,8 +22,6 @@ public class ChessModel implements IChessModel {
         board[7][6] = new Knight(Player.WHITE);
         board[7][7] = new Rook(Player.WHITE);
 
-        //FIXME: Black chess pieces unable to be created, I think its because something is missing in W19Project3GIVETOSTUDENTS.ChessPanel
-
 		board[0][0] = new Rook(Player.BLACK);
 		board[0][1] = new Knight(Player.BLACK);
 		board[0][2] = new Bishop(Player.BLACK);
@@ -33,14 +31,15 @@ public class ChessModel implements IChessModel {
 		board[0][6] = new Knight(Player.BLACK);
 		board[0][7] = new Rook(Player.BLACK);
 
-
         //Loop to place pawns cuz lazy
 		for(int i = 0; i < 16; i++) {
 			if(i < 8) {
 				//White pawns
 				board[6][i] = new Pawn(Player.WHITE);
 				//Black pawns
-			} else board[1][i - 8] = new Pawn(Player.BLACK);
+			} else {
+				board[1][i - 8] = new Pawn(Player.BLACK);
+			}
 		}
 
 	}
@@ -50,10 +49,13 @@ public class ChessModel implements IChessModel {
 		boolean valid = false;
 		return valid;
 	}
-
+	//isValidMove(): used for basic chessboard rules
 	public boolean isValidMove(Move move) {
 		boolean valid = false;
 
+		if(move.fromRow == move.toRow && move.fromColumn == move.toColumn){
+			return false;
+		}
 		if (board[move.fromRow][move.fromColumn] != null)
 			if (board[move.fromRow][move.fromColumn].isValidMove(move, board) == true)
                 return true;
@@ -62,8 +64,11 @@ public class ChessModel implements IChessModel {
 	}
 
 	public void move(Move move) {
-		board[move.toRow][move.toColumn] =  board[move.fromRow][move.fromColumn];
-		board[move.fromRow][move.fromColumn] = null;
+
+
+			board[move.toRow][move.toColumn] = board[move.fromRow][move.fromColumn];
+			board[move.fromRow][move.fromColumn] = null;
+
 	}
 
 	public boolean inCheck(Player p) {
@@ -71,7 +76,6 @@ public class ChessModel implements IChessModel {
 		boolean valid = false;
 		return valid;
 	}
-
 
 	public Player currentPlayer() {
 		return player;

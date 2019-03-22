@@ -12,7 +12,7 @@ public class Queen extends ChessPiece {
 	}
 
 	public String type() {
-		return "Queen";
+		return "W19Project3GIVETOSTUDENTS.Queen";
 		
 	}
 	
