@@ -12,7 +12,6 @@ public class ChessModel implements IChessModel {
 		board = new IChessPiece[8][8];
 		player = Player.WHITE;
 
-
         board[7][0] = new Rook(Player.WHITE);
         board[7][1] = new Knight(Player.WHITE);
         board[7][2] = new Bishop(Player.WHITE);
@@ -53,12 +52,19 @@ public class ChessModel implements IChessModel {
 	public boolean isValidMove(Move move) {
 		boolean valid = false;
 
-		if(move.fromRow == move.toRow && move.fromColumn == move.toColumn){
+		if (move.fromRow == move.toRow && move.fromColumn == move.toColumn) {
 			return false;
 		}
-		if (board[move.fromRow][move.fromColumn] != null)
+		if(board[move.fromRow][move.fromColumn].player() == Player.WHITE && board[move.toRow][move.toColumn].player() == Player.WHITE) {
+			return false;
+		} else if(board[move.fromRow][move.fromColumn].player() == Player.BLACK && board[move.toRow][move.toColumn].player() == Player.BLACK){
+			return false;
+		}
+
+		if (board[move.fromRow][move.fromColumn] != null) {
 			if (board[move.fromRow][move.fromColumn].isValidMove(move, board) == true)
-                return true;
+				return true;
+		}
 
 		return valid;
 	}
