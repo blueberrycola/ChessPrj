@@ -55,11 +55,12 @@ public class ChessModel implements IChessModel {
 		if (move.fromRow == move.toRow && move.fromColumn == move.toColumn) {
 			return false;
 		}
+		 //FIXME: Program crashes if you double click something and then attempt to move it afterwards
 		//Friendly fire check: Player.WHITE
 		if(board[move.fromRow][move.fromColumn].player() == Player.WHITE) {
 			//Return true if going to empty space
 			if(board[move.toRow][move.toColumn] == null) {
-				return true;
+                //I have no idea why but without this empty if statement the whole thing will crash after one move
 			}
 			//Return false if attacking own piece
 			else if (board[move.toRow][move.toColumn].player() == Player.WHITE) {
@@ -72,13 +73,14 @@ public class ChessModel implements IChessModel {
 		if(board[move.fromRow][move.fromColumn].player() == Player.BLACK) {
 			//Return true if going to empty space
 			if(board[move.toRow][move.toColumn] == null) {
-				return true;
+                //I have no idea why but without this empty if statement the whole thing will crash after one move
 			}
 			//Return false if attacking own piece
 			else if(board[move.toRow][move.toColumn].player() == Player.BLACK) {
 				return false;
 			}
 		}
+
 
 
 		if (board[move.fromRow][move.fromColumn] != null) {
