@@ -51,29 +51,32 @@ public class ChessModel implements IChessModel {
 	//isValidMove(): used for basic chessboard rules
 	public boolean isValidMove(Move move) {
 		boolean valid = false;
-
+		//Checker for click spamming a single chess piece
 		if (move.fromRow == move.toRow && move.fromColumn == move.toColumn) {
 			return false;
 		}
-		 //FIXME: Program crashes if you double click something and then attempt to move it afterwards
-		//Friendly fire check: Player.WHITE
-		if(board[move.fromRow][move.fromColumn].player() == Player.WHITE) {
-			//Return true if going to empty space
-			if(board[move.toRow][move.toColumn] == null) {
-                //I have no idea why but without this empty if statement the whole thing will crash after one move
-			}
-			//Return false if attacking own piece
-			else if (board[move.toRow][move.toColumn].player() == Player.WHITE) {
-				return false;
-			}
+
+		//Checker for null and null
+        if(board[move.fromRow][move.fromColumn] == null && board[move.toRow][move.toColumn] == null) {
+            return false;
+        }
+        //Friendly fire check: Player.WHITE
+        if(board[move.fromRow][move.fromColumn].player() == Player.WHITE) {
+            if(board[move.toRow][move.toColumn] == null) {
+
+            } else if(board[move.toRow][move.toColumn].player() == Player.WHITE) {
+                //FIXME: implement better checking, ie: wBishop jumping over wPawn
+
+                return false;
+            }
+        }
 
 
-		}
 		//Friendly fire check: Player.BLACK
 		if(board[move.fromRow][move.fromColumn].player() == Player.BLACK) {
 			//Return true if going to empty space
 			if(board[move.toRow][move.toColumn] == null) {
-                //I have no idea why but without this empty if statement the whole thing will crash after one move
+
 			}
 			//Return false if attacking own piece
 			else if(board[move.toRow][move.toColumn].player() == Player.BLACK) {

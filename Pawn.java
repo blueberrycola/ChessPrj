@@ -50,9 +50,11 @@ public class Pawn extends ChessPiece {
                         firstTurn = false;
                         return true;
                     }
+
                 }
             }
-		} else {
+		}
+		if(player() == Player.BLACK) {
 			//FIXME: Add first turn buffed move
 		    //First turn check
             if(move.fromRow + 2 == move.toRow && move.fromColumn == move.toColumn && firstTurn) {
@@ -61,7 +63,6 @@ public class Pawn extends ChessPiece {
             }
             //Move up by one unit
 		    if(move.fromRow + 1 == move.toRow && move.fromColumn == move.toColumn) {
-				System.out.println(move.toString());
 				firstTurn = false;
 				return true;
 			}

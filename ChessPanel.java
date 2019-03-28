@@ -56,6 +56,14 @@ public class ChessPanel extends JPanel {
         firstTurnFlag = true;
     }
 
+//    public void setFirstTurn(boolean firstTurnFlag){
+//        this.firstTurnFlag = firstTurnFlag;
+//    }
+//
+//    public boolean getFirstTurn(){
+//        return this.firstTurnFlag;
+//    }
+
     private void setBackGroundColor(int r, int c) {
         if ((c % 2 == 1 && r % 2 == 0) || (c % 2 == 0 && r % 2 == 1)) {
             board[r][c].setBackground(Color.LIGHT_GRAY);
@@ -211,7 +219,10 @@ public class ChessPanel extends JPanel {
             for (int r = 0; r < model.numRows(); r++)
                 for (int c = 0; c < model.numColumns(); c++)
                     if (board[r][c] == event.getSource())
+
                         if (firstTurnFlag == true) {
+                            //If the piece at row, column is null then ignore
+                            if(model.pieceAt(r, c) == null) return;
                             fromRow = r;
                             fromCol = c;
                             firstTurnFlag = false;

@@ -11,7 +11,6 @@ public abstract class ChessPiece implements IChessPiece {
 
 	private Player owner;
 
-
 	protected ChessPiece(Player player) {
 		this.owner = player;
 
@@ -26,7 +25,6 @@ public abstract class ChessPiece implements IChessPiece {
 
 	public boolean isValidMove(Move move, IChessPiece[][] board) {
 		boolean valid = false;
-
 
 		return valid;
 	}
