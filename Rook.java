@@ -20,37 +20,40 @@ public class Rook extends ChessPiece {
 	public boolean isValidMove(Move move, IChessPiece[][] board) {
 		boolean valid = true;
 
+
 		//Valid move check for vertical movement, plus or minus
-        if(move.fromRow == move.toRow && move.fromColumn == move.toColumn) {
-            return false;
-        }
-        if(move.fromRow < move.toRow && move.fromColumn == move.toColumn) {
-            for(int startY = move.fromRow; startY < move.toRow; startY++) {
 
-                if(startY == move.toRow - 1) {
-                    return true;
-                }
-
-                if(board[move.fromRow][move.fromColumn].player() == board[startY][move.fromColumn].player()) {
+        if((move.fromRow < move.toRow) && (move.fromColumn == move.toColumn)) {
+            for(int start = move.fromRow + 1; start <= move.toRow; start++) {
+                if(board[start][move.fromColumn] != null) {
                     return false;
                 }
-
             }
             return true;
         } else if(move.fromRow > move.toRow && move.fromColumn == move.toColumn) {
-            for(int startY = move.fromRow; startY > move.toRow; --startY) {
-
+            for(int start = move.fromRow - 1; start >= move.toRow; start--) {
+                if(board[start][move.fromColumn] != null) {
+                    return false;
+                }
             }
             return true;
         }
         //Valid move check for horizontal movement, plus or minus
-        else if(move.fromRow == move.toRow && move.fromColumn > move.toColumn) {
+        else if(move.fromRow == move.toRow && move.fromColumn < move.toColumn) {
+            for(int start = move.fromColumn + 1; start <= move.toColumn; start++) {
+                if(board[move.fromRow][start] != null) {
+                    return false;
+                }
+            }
             return true;
-        } else if(move.fromRow == move.toRow && move.fromColumn < move.toColumn) {
+        } else if(move.fromRow == move.toRow && move.fromColumn > move.toColumn) {
+            for(int start = move.fromColumn - 1; start >= move.toColumn; start--) {
+                if(board[move.fromRow][start] != null) {
+                    return false;
+                }
+            }
             return true;
 		}
-
-
 
         return false;
 		
