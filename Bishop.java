@@ -30,6 +30,9 @@ public class Bishop extends ChessPiece {
 			System.out.println("DEBUG: Up-Left Diagonal");
 			//Loop
 			for(int start = move.fromRow - 1; start >= move.toRow; start--) {
+				if(board[start][diffCol] != null && start != move.toRow && diffCol != move.toColumn) {
+					return false;
+				}
 				if(start == move.toRow && diffCol == move.toColumn) {
 					return true;
 				}
@@ -41,6 +44,9 @@ public class Bishop extends ChessPiece {
 			diffCol = move.fromColumn + 1;
 			System.out.println("DEBUG: Down-Right");
 			for(int start = move.fromRow + 1; start <= move.toRow; start++) {
+				if(board[start][diffCol] != null && start != move.toRow && diffCol != move.toColumn) {
+					return false;
+				}
 				if(start == move.toRow && diffCol == move.toColumn) {
 					return true;
 				}
@@ -52,6 +58,9 @@ public class Bishop extends ChessPiece {
 			diffCol = move.fromColumn + 1;
 			System.out.println("DEBUG: Up-Right");
 			for(int start = move.fromRow - 1; start >= move.toRow; start--) {
+				if(board[start][diffCol] != null && start != move.toRow && diffCol != move.toColumn) {
+					return false;
+				}
 				if(start == move.toRow && diffCol == move.toColumn) {
 					return true;
 				}
@@ -63,9 +72,13 @@ public class Bishop extends ChessPiece {
 			diffCol = move.fromColumn - 1;
 			System.out.println("DEBUG: Down-Left");
 			for(int start = move.fromRow + 1; start <= move.toRow; start++) {
+				if(board[start][diffCol] != null && start != move.toRow && diffCol != move.toColumn) {
+					return false;
+				}
 				if(start == move.toRow && diffCol == move.toColumn) {
 					return true;
 				}
+
 				diffCol--;
 			}
 			return false;
