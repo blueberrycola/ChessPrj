@@ -13,6 +13,8 @@ import javax.swing.*;
 public class ChessPanel extends JPanel {
 
     private JButton[][] board;
+    private JButton undoButton;
+
     private ChessModel model;
 
     private ImageIcon wRook, wBishop, wQueen, wKing, wPawn, wKnight;
@@ -30,11 +32,15 @@ public class ChessPanel extends JPanel {
     public ChessPanel() {
         model = new ChessModel();
         board = new JButton[model.numRows()][model.numColumns()];
+        undoButton = new JButton("Undo Previous Move");
         listener = new listener();
         createIcons();
 
         JPanel boardpanel = new JPanel();
         JPanel buttonpanel = new JPanel();
+        buttonpanel.add(undoButton);
+        undoButton.addActionListener(listener);
+        buttonpanel.setLayout(new GridLayout(3, 9,1,1));
         boardpanel.setLayout(new GridLayout(model.numRows(), model.numColumns(), 1, 1));
 
         for (int r = 0; r < model.numRows(); r++) {
@@ -56,13 +62,6 @@ public class ChessPanel extends JPanel {
         firstTurnFlag = true;
     }
 
-//    public void setFirstTurn(boolean firstTurnFlag){
-//        this.firstTurnFlag = firstTurnFlag;
-//    }
-//
-//    public boolean getFirstTurn(){
-//        return this.firstTurnFlag;
-//    }
 
     private void setBackGroundColor(int r, int c) {
         if ((c % 2 == 1 && r % 2 == 0) || (c % 2 == 0 && r % 2 == 1)) {
@@ -216,13 +215,13 @@ public class ChessPanel extends JPanel {
     // inner class that represents action listener for buttons
     private class listener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            for (int r = 0; r < model.numRows(); r++)
-                for (int c = 0; c < model.numColumns(); c++)
-                    if (board[r][c] == event.getSource())
+            for (int r = 0; r < model.numRows(); r++) {
+                for (int c = 0; c < model.numColumns(); c++) {
+                    if (board[r][c] == event.getSource()) {
 
                         if (firstTurnFlag == true) {
                             //If the piece at row, column is null then ignore
-                            if(model.pieceAt(r, c) == null) return;
+                            if (model.pieceAt(r, c) == null) return;
                             fromRow = r;
                             fromCol = c;
                             firstTurnFlag = false;
@@ -236,6 +235,13 @@ public class ChessPanel extends JPanel {
                                 displayBoard();
                             }
                         }
+                    }
+                }
+            }
+            if(undoButton == event.getSource()) {
+                model.undoButton();
+                displayBoard();
+            }
         }
     }
 }

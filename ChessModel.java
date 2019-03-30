@@ -2,17 +2,31 @@ package W19Project3GIVETOSTUDENTS;
 
 import chess.*;
 
+import javax.swing.*;
+import java.util.ArrayList;
+
 public class ChessModel implements IChessModel {
     private IChessPiece[][] board;
     private Player player;
 
+    //Arrays Responcible for undoButton
+    private ArrayList<Integer> fromMoveRow, fromMoveCol, toMoveRow, toMoveCol;
+
     // declare other instance variables as needed
 
     public ChessModel() {
+
+
+
         player = Player.WHITE;
         setNextPlayer(player);
         board = new IChessPiece[8][8];
         player = Player.WHITE;
+
+        fromMoveRow = new ArrayList<>();
+        fromMoveCol = new ArrayList<>();
+        toMoveRow = new ArrayList<>();
+        toMoveCol = new ArrayList<>();
 
         board[7][0] = new Rook(Player.WHITE);
         board[7][1] = new Knight(Player.WHITE);
@@ -43,6 +57,43 @@ public class ChessModel implements IChessModel {
             }
         }
 
+
+    }
+
+    public void undoButton() {
+        System.out.println(fromMoveCol.size());
+        if(fromMoveCol.size() == 0) {
+            JOptionPane.showMessageDialog(null,"There are no moves to reverse");
+        } else {
+
+
+            int undoVal = fromMoveRow.size() - 1;
+
+            if(undoVal % 2 == 0) {
+                setNextPlayer(Player.WHITE);
+            }else {
+                setNextPlayer(Player.BLACK);
+            }
+
+            System.out.println(fromMoveRow.get(undoVal) + " " + fromMoveCol.get(undoVal));
+            System.out.println(toMoveRow.get(undoVal) + " " + toMoveCol.get(undoVal));
+            //Reverses the move you just placed and removes the stored coordinates from the ArrayLists
+            IChessPiece temp = board[toMoveRow.get(undoVal)][toMoveCol.get(undoVal)];
+
+            if(temp.toString().contains("W19Project3GIVETOSTUDENTS.Pawn")) {
+                board[fromMoveRow.get(undoVal)][fromMoveCol.get(undoVal)] = new Pawn(currentPlayer());
+                board[toMoveRow.get(undoVal)][toMoveCol.get(undoVal)] = null;
+            }else {
+                setPiece(toMoveRow.get(undoVal), toMoveCol.get(undoVal), null);
+                setPiece(fromMoveRow.get(undoVal), fromMoveCol.get(undoVal) , temp);
+            }
+            toMoveRow.remove(undoVal);
+            fromMoveRow.remove(undoVal);
+            toMoveCol.remove(undoVal);
+            fromMoveCol.remove(undoVal);
+
+
+        }
 
     }
 
@@ -97,6 +148,15 @@ public class ChessModel implements IChessModel {
 
                         player = Player.BLACK;
                         setNextPlayer(player);
+                        /*********************************************************
+                         * Since white always goes first the undo move button
+                         * will store moves as 0 and all ints even(move % 2 == 0)
+                         ********************************************************/
+                        fromMoveRow.add(move.fromRow);
+                        fromMoveCol.add(move.fromColumn);
+                        toMoveRow.add(move.toRow);
+                        toMoveCol.add(move.toColumn);
+
                         System.out.println("Player is " + currentPlayer() + " Valid move, carry on");
                         return true;
                     }
@@ -139,6 +199,11 @@ public class ChessModel implements IChessModel {
                         player = Player.WHITE;
                         setNextPlayer(player);
                         System.out.println("Player is " + currentPlayer() + " Valid move, carry on");
+                        fromMoveRow.add(move.fromRow);
+                        fromMoveCol.add(move.fromColumn);
+                        toMoveRow.add(move.toRow);
+                        toMoveCol.add(move.toColumn);
+
                         return true;
                     }
                 }
@@ -151,7 +216,6 @@ public class ChessModel implements IChessModel {
 
 
     public void move(Move move) {
-
 
         board[move.toRow][move.toColumn] = board[move.fromRow][move.fromColumn];
         board[move.fromRow][move.fromColumn] = null;
