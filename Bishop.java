@@ -22,27 +22,56 @@ public class Bishop extends ChessPiece {
 	 * @return true or false
 	 */
 	public boolean isValidMove(Move move, IChessPiece[][] board) {
-		//if branch that checks for valid moves
-		//You can go up to 7 tiles diagonally
-		for(int i = 1; i < 8; i++) {
-			//+i, +i validation
-			if(move.fromRow + i == move.toRow && move.fromColumn + i == move.toColumn){
-				return true;
+		//If branch that deals with allowed moves of the bishop
+		//Diagonal: -i, -i (Up-Left)
+		int diffCol;
+		if(move.fromRow > move.toRow && move.fromColumn > move.toColumn) {
+			diffCol = move.fromColumn - 1;
+			System.out.println("DEBUG: Up-Left Diagonal");
+			//Loop
+			for(int start = move.fromRow - 1; start >= move.toRow; start--) {
+				if(start == move.toRow && diffCol == move.toColumn) {
+					return true;
+				}
+				diffCol--;
 			}
-			//-i, -i validation
-			if(move.fromRow - i == move.toRow && move.fromColumn - i == move.toColumn) {
-				return true;
+			return false;
+		//Diagonal: +i, +i (Down-Right)
+		}else if(move.fromRow < move.toRow && move.fromColumn < move.toColumn) {
+			diffCol = move.fromColumn + 1;
+			System.out.println("DEBUG: Down-Right");
+			for(int start = move.fromRow + 1; start <= move.toRow; start++) {
+				if(start == move.toRow && diffCol == move.toColumn) {
+					return true;
+				}
+				diffCol++;
 			}
-			//+i, -i validation
-			if(move.fromRow + i == move.toRow && move.fromColumn - i == move.toColumn) {
-				return true;
+			return false;
+		//Diagonal: -i, +i (Up-Right)
+		}else if(move.fromRow > move.toRow && move.fromColumn < move.toColumn) {
+			diffCol = move.fromColumn + 1;
+			System.out.println("DEBUG: Up-Right");
+			for(int start = move.fromRow - 1; start >= move.toRow; start--) {
+				if(start == move.toRow && diffCol == move.toColumn) {
+					return true;
+				}
+				diffCol++;
 			}
-			//-i, +i validation
-			if(move.fromRow - i == move.toRow && move.fromColumn + i == move.toColumn) {
-				return true;
+			return false;
+		//Diagonal: +i, -i (Down-Left)
+		}else if(move.fromRow < move.toRow && move.fromColumn > move.toColumn) {
+			diffCol = move.fromColumn - 1;
+			System.out.println("DEBUG: Down-Left");
+			for(int start = move.fromRow + 1; start <= move.toRow; start++) {
+				if(start == move.toRow && diffCol == move.toColumn) {
+					return true;
+				}
+				diffCol--;
 			}
+			return false;
 		}
-		//anything else is not valid
+
+
 		return false;
 	}
 }
