@@ -4,14 +4,15 @@ import chess.*;
 
 public class ChessModel implements IChessModel {
     private IChessPiece[][] board;
-	private Player player;
-	private boolean firstGameTurn;
+    private Player player;
 
-	// declare other instance variables as needed
+    // declare other instance variables as needed
 
-	public ChessModel() {
-		board = new IChessPiece[8][8];
-		player = Player.WHITE;
+    public ChessModel() {
+        player = Player.WHITE;
+        setNextPlayer(player);
+        board = new IChessPiece[8][8];
+        player = Player.WHITE;
 
         board[7][0] = new Rook(Player.WHITE);
         board[7][1] = new Knight(Player.WHITE);
@@ -22,152 +23,188 @@ public class ChessModel implements IChessModel {
         board[7][6] = new Knight(Player.WHITE);
         board[7][7] = new Rook(Player.WHITE);
 
-		board[0][0] = new Rook(Player.BLACK);
-		board[0][1] = new Knight(Player.BLACK);
-		board[0][2] = new Bishop(Player.BLACK);
-		board[0][3] = new Queen(Player.BLACK);
-		board[0][4] = new King(Player.BLACK);
-		board[0][5] = new Bishop(Player.BLACK);
-		board[0][6] = new Knight(Player.BLACK);
-		board[0][7] = new Rook(Player.BLACK);
+        board[0][0] = new Rook(Player.BLACK);
+        board[0][1] = new Knight(Player.BLACK);
+        board[0][2] = new Bishop(Player.BLACK);
+        board[0][3] = new Queen(Player.BLACK);
+        board[0][4] = new King(Player.BLACK);
+        board[0][5] = new Bishop(Player.BLACK);
+        board[0][6] = new Knight(Player.BLACK);
+        board[0][7] = new Rook(Player.BLACK);
 
         //Loop to place pawns cuz lazy
-		for(int i = 0; i < 16; i++) {
-			if(i < 8) {
-				//White pawns
-				board[6][i] = new Pawn(Player.WHITE);
-				//Black pawns
-			} else {
-				board[1][i - 8] = new Pawn(Player.BLACK);
-			}
-		}
-		firstGameTurn = true;
-
-	}
-
-	public boolean isComplete() {
-		//FIXME: isComplete() return false until you are at step 10
-		boolean valid = false;
-		return valid;
-	}
-
-
-
-	//isValidMove(): used for basic chessboard rules
-	public boolean isValidMove(Move move) {
-		boolean valid = false;
-
-		//If the tile you are moving is a chesspiece continue through branch statement
-		if(board[move.fromRow][move.fromColumn] != null) {
-			//Rules of chess: white pieces always first
-			if(board[move.fromRow][move.fromColumn].player() == Player.BLACK && firstGameTurn) {
-				firstGameTurn = false;
-				return false;
-			}
-
-		}
-
-		//Checker for click spamming a single chess piece
-		if (move.fromRow == move.toRow && move.fromColumn == move.toColumn) {
-			return false;
-		}
-
-		//Checker for null and null
-        if(board[move.fromRow][move.fromColumn] == null && board[move.toRow][move.toColumn] == null) {
-            return false;
-        }
-        //Friendly fire check: Player.WHITE
-        if(board[move.fromRow][move.fromColumn].player() == Player.WHITE) {
-            if(board[move.toRow][move.toColumn] == null) {
-
-            } else if(board[move.toRow][move.toColumn].player() == Player.WHITE) {
-                //FIXME: implement better checking, ie: wBishop jumping over wPawn
-
-                return false;
+        for(int i = 0; i < 16; i++) {
+            if(i < 8) {
+                //White pawns
+                board[6][i] = new Pawn(Player.WHITE);
+                //Black pawns
+            } else {
+                board[1][i - 8] = new Pawn(Player.BLACK);
             }
         }
 
 
-		//Friendly fire check: Player.BLACK
-		if(board[move.fromRow][move.fromColumn].player() == Player.BLACK) {
-			//Return true if going to empty space
-			if(board[move.toRow][move.toColumn] == null) {
+    }
 
-			}
-			//Return false if attacking own piece
-			else if(board[move.toRow][move.toColumn].player() == Player.BLACK) {
-				return false;
-			}
-		}
+    public boolean isComplete() {
+        //FIXME: isComplete() return false until you are at step 10
+        boolean valid = false;
+        return valid;
+    }
 
 
 
-		if (board[move.fromRow][move.fromColumn] != null) {
-			if (board[move.fromRow][move.fromColumn].isValidMove(move, board))
-
-			    return true;
-		}
+    //isValidMove(): used for basic chessboard rules
+    public boolean isValidMove(Move move) {
 
 
+        currentPlayer();
+        System.out.println("Player is " + currentPlayer());
+        boolean valid = false;
 
-		return valid;
-	}
+        switch(player) {
+            case WHITE:
+                if(board[move.fromRow][move.fromColumn].player() == Player.BLACK){
+                    System.out.println("Can't move Black yet");
+                    return false;
+                }
 
-	public void move(Move move) {
+                if (move.fromRow == move.toRow && move.fromColumn == move.toColumn && currentPlayer() == Player.WHITE) {
+                    player = Player.WHITE;
+                    setNextPlayer(player);
+                    System.out.println("Player is " + currentPlayer() + " You can't move in the same spot");
+                    return false;
+                }
 
 
-			board[move.toRow][move.toColumn] = board[move.fromRow][move.fromColumn];
-			board[move.fromRow][move.fromColumn] = null;
+                if(board[move.fromRow][move.fromColumn].player() == Player.WHITE) {
+                    if(board[move.toRow][move.toColumn] == null) {
+                        player = Player.WHITE;
+                        setNextPlayer(player);
+                        System.out.println("Player is " + currentPlayer() + " Can't jump your own piece");
+                    }
+                    else if(board[move.toRow][move.toColumn].player() == Player.WHITE) {
+                //FIXME: implement better checking, ie: wBishop jumping over wPawn
+                        player = Player.WHITE;
+                        setNextPlayer(player);
+                        System.out.println("Player is " + currentPlayer() + " Can't jump your own piece");
+                        return false;
+                    }
+                }
 
-	}
+                if (board[move.fromRow][move.fromColumn] != null && currentPlayer() == Player.WHITE) {
+                    if (board[move.fromRow][move.fromColumn].isValidMove(move, board) && currentPlayer() == Player.WHITE) {
 
-	public boolean inCheck(Player p) {
-		//FIXME: inCheck() returns false until you are at step 9
-		boolean valid = false;
-		return valid;
-	}
+                        player = Player.BLACK;
+                        setNextPlayer(player);
+                        System.out.println("Player is " + currentPlayer() + " Valid move, carry on");
+                        return true;
+                    }
+                }
 
-	public Player currentPlayer() {
-		return player;
-	}
+                break;
 
-	public int numRows() {
-		return 8;
-	}
+            case BLACK:
+                if(board[move.fromRow][move.fromColumn].player() == Player.WHITE){
+                    System.out.println("Can't move Black yet");
+                    return false;
+                }
 
-	public int numColumns() {
-		return 8;
-	}
+                if (move.fromRow == move.toRow && move.fromColumn == move.toColumn && currentPlayer() == Player.BLACK) {
+                    player = Player.BLACK;
+                    setNextPlayer(player);
+                    System.out.println("Player is " + currentPlayer() + " You can't move in the same spot");
+                    return false;
+                }
 
-	public IChessPiece pieceAt(int row, int column) {		
-		return board[row][column];
-	}
 
-	public void setNextPlayer() {
-		player = player.next();
-	}
+                if(board[move.fromRow][move.fromColumn].player() == Player.BLACK) {
+                    if(board[move.toRow][move.toColumn] == null) {
+                        player = Player.BLACK;
+                        setNextPlayer(player);
+                        System.out.println("Player is " + currentPlayer() + " Can't jump your own piece");
+                    }
+                    else if(board[move.toRow][move.toColumn].player() == Player.BLACK) {
+                        //FIXME: implement better checking, ie: wBishop jumping over wPawn
+                        player = Player.BLACK;
+                        setNextPlayer(player);
+                        System.out.println("Player is " + currentPlayer() + " Can't jump your own piece");
+                        return false;
+                    }
+                }
 
-	public void setPiece(int row, int column, IChessPiece piece) {
-		board[row][column] = piece;
-	}
+                if (board[move.fromRow][move.fromColumn] != null && currentPlayer() == Player.BLACK) {
+                    if (board[move.fromRow][move.fromColumn].isValidMove(move, board) && currentPlayer() == Player.BLACK) {
 
-	public void AI() {
-		/*
-		 * Write a simple AI set of rules in the following order. 
-		 * a. Check to see if you are in check.
-		 * 		i. If so, get out of check by moving the king or placing a piece to block the check 
-		 * 
-		 * b. Attempt to put opponent into check (or checkmate). 
-		 * 		i. Attempt to put opponent into check without losing your piece
-		 *		ii. Perhaps you have won the game. 
-		 *
-		 *c. Determine if any of your pieces are in danger, 
-		 *		i. Move them if you can. 
-		 *		ii. Attempt to protect that piece. 
-		 *
-		 *d. Move a piece (pawns first) forward toward opponent king 
-		 *		i. check to see if that piece is in danger of being removed, if so, move a different piece.
-		 */
+                        player = Player.WHITE;
+                        setNextPlayer(player);
+                        System.out.println("Player is " + currentPlayer() + " Valid move, carry on");
+                        return true;
+                    }
+                }
 
-		}
+                break;
+        }
+
+        return valid;
+        }
+
+
+    public void move(Move move) {
+
+
+        board[move.toRow][move.toColumn] = board[move.fromRow][move.fromColumn];
+        board[move.fromRow][move.fromColumn] = null;
+
+    }
+
+    public boolean inCheck(Player p) {
+        //FIXME: inCheck() returns false until you are at step 9
+        boolean valid = false;
+        return valid;
+    }
+
+    public Player currentPlayer() {
+        return player;
+    }
+
+    public int numRows() {
+        return 8;
+    }
+
+    public int numColumns() {
+        return 8;
+    }
+
+    public IChessPiece pieceAt(int row, int column) {
+        return board[row][column];
+    }
+
+    public void setNextPlayer(Player turn) {
+        player = turn;
+    }
+
+    public void setPiece(int row, int column, IChessPiece piece) {
+        board[row][column] = piece;
+    }
+
+    public void AI() {
+        /*
+         * Write a simple AI set of rules in the following order.
+         * a. Check to see if you are in check.
+         * 		i. If so, get out of check by moving the king or placing a piece to block the check
+         *
+         * b. Attempt to put opponent into check (or checkmate).
+         * 		i. Attempt to put opponent into check without losing your piece
+         *		ii. Perhaps you have won the game.
+         *
+         *c. Determine if any of your pieces are in danger,
+         *		i. Move them if you can.
+         *		ii. Attempt to protect that piece.
+         *
+         *d. Move a piece (pawns first) forward toward opponent king
+         *		i. check to see if that piece is in danger of being removed, if so, move a different piece.
+         */
+
+    }
 }
