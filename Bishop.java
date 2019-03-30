@@ -16,7 +16,8 @@ public class Bishop extends ChessPiece {
 	}
 
 	/***
-	 * for loop that returns true if the bishop moves diagonally and returns false to anything else
+	 * A If branch that checks for increment/decrement of fromRow and fromCol in ways that are diagonal
+	 * and also checks if you are hopping over black/white pieces illegaly (see line 35)
 	 * @param move used to validate moves
 	 * @param board
 	 * @return true or false
@@ -30,6 +31,7 @@ public class Bishop extends ChessPiece {
 			System.out.println("DEBUG: Up-Left Diagonal");
 			//Loop
 			for(int start = move.fromRow - 1; start >= move.toRow; start--) {
+				//if your location isnt null and you havent reached the end point, move is invalid
 				if(board[start][diffCol] != null && start != move.toRow && diffCol != move.toColumn) {
 					return false;
 				}
