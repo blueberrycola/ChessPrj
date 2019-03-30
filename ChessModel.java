@@ -5,6 +5,7 @@ import chess.*;
 public class ChessModel implements IChessModel {
     private IChessPiece[][] board;
 	private Player player;
+	private boolean firstGameTurn;
 
 	// declare other instance variables as needed
 
@@ -40,6 +41,7 @@ public class ChessModel implements IChessModel {
 				board[1][i - 8] = new Pawn(Player.BLACK);
 			}
 		}
+		firstGameTurn = true;
 
 	}
 
@@ -48,9 +50,23 @@ public class ChessModel implements IChessModel {
 		boolean valid = false;
 		return valid;
 	}
+
+
+
 	//isValidMove(): used for basic chessboard rules
 	public boolean isValidMove(Move move) {
 		boolean valid = false;
+
+		//If the tile you are moving is a chesspiece continue through branch statement
+		if(board[move.fromRow][move.fromColumn] != null) {
+			//Rules of chess: white pieces always first
+			if(board[move.fromRow][move.fromColumn].player() == Player.BLACK && firstGameTurn) {
+				firstGameTurn = false;
+				return false;
+			}
+
+		}
+
 		//Checker for click spamming a single chess piece
 		if (move.fromRow == move.toRow && move.fromColumn == move.toColumn) {
 			return false;
@@ -87,8 +103,9 @@ public class ChessModel implements IChessModel {
 
 
 		if (board[move.fromRow][move.fromColumn] != null) {
-			if (board[move.fromRow][move.fromColumn].isValidMove(move, board) == true)
-				return true;
+			if (board[move.fromRow][move.fromColumn].isValidMove(move, board))
+
+			    return true;
 		}
 
 
