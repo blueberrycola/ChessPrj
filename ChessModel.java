@@ -11,6 +11,7 @@ public class ChessModel implements IChessModel {
 
     //Arrays Responcible for undoButton
     private ArrayList<Integer> fromMoveRow, fromMoveCol, toMoveRow, toMoveCol;
+    private ArrayList<String> pieceMemory;
 
     // declare other instance variables as needed
 
@@ -27,6 +28,7 @@ public class ChessModel implements IChessModel {
         fromMoveCol = new ArrayList<>();
         toMoveRow = new ArrayList<>();
         toMoveCol = new ArrayList<>();
+        pieceMemory = new ArrayList<>();
 
         board[7][0] = new Rook(Player.WHITE);
         board[7][1] = new Knight(Player.WHITE);
@@ -80,7 +82,7 @@ public class ChessModel implements IChessModel {
             //Reverses the move you just placed and removes the stored coordinates from the ArrayLists
             IChessPiece temp = board[toMoveRow.get(undoVal)][toMoveCol.get(undoVal)];
 
-            if(temp.toString().contains("W19Project3GIVETOSTUDENTS.Pawn")) {
+            if(pieceMemory.get(undoVal).contains("W19Project3GIVETOSTUDENTS.Pawn")) {
                 board[fromMoveRow.get(undoVal)][fromMoveCol.get(undoVal)] = new Pawn(currentPlayer());
                 board[toMoveRow.get(undoVal)][toMoveCol.get(undoVal)] = null;
             }else {
@@ -91,6 +93,7 @@ public class ChessModel implements IChessModel {
             fromMoveRow.remove(undoVal);
             toMoveCol.remove(undoVal);
             fromMoveCol.remove(undoVal);
+            pieceMemory.remove(undoVal);
 
 
         }
@@ -156,6 +159,7 @@ public class ChessModel implements IChessModel {
                         fromMoveCol.add(move.fromColumn);
                         toMoveRow.add(move.toRow);
                         toMoveCol.add(move.toColumn);
+                        pieceMemory.add(board[move.fromRow][move.fromColumn].type());
 
                         System.out.println("Player is " + currentPlayer() + " Valid move, carry on");
                         return true;
@@ -203,6 +207,7 @@ public class ChessModel implements IChessModel {
                         fromMoveCol.add(move.fromColumn);
                         toMoveRow.add(move.toRow);
                         toMoveCol.add(move.toColumn);
+                        pieceMemory.add(board[move.fromRow][move.fromColumn].type());
 
                         return true;
                     }
@@ -222,8 +227,25 @@ public class ChessModel implements IChessModel {
 
     }
 
+    /***
+     * Finds the king black or white player and determines if you are in check,
+     * @param  p {@link W18project3.Move} the Player being checked
+     * @return
+     */
     public boolean inCheck(Player p) {
         //FIXME: inCheck() returns false until you are at step 9
+        //Find king
+        int kingRow;
+        int kingCol;
+        for(int r = 0; r < numRows(); r++) {
+            for(int c = 0; c < numColumns(); c++) {
+                if(board[r][c].type().contains("W19Project3GIVETOSTUDENTS.King") && board[r][c].player() == p) {
+                    kingRow = r;
+                    kingCol = c;
+                }
+            }
+        }
+
         boolean valid = false;
         return valid;
     }
