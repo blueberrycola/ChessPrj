@@ -111,17 +111,19 @@ public class ChessModel implements IChessModel {
     //isValidMove(): used for basic chessboard rules
     public boolean isValidMove(Move move) {
 
-
         currentPlayer();
         System.out.println("Player is " + currentPlayer());
-        boolean valid = false;
+
+
 
         switch(player) {
             case WHITE:
+
                 if(board[move.fromRow][move.fromColumn].player() == Player.BLACK){
                     System.out.println("Can't move Black yet");
                     return false;
                 }
+
 
                 if (move.fromRow == move.toRow && move.fromColumn == move.toColumn && currentPlayer() == Player.WHITE) {
                     player = Player.WHITE;
@@ -138,7 +140,6 @@ public class ChessModel implements IChessModel {
                         System.out.println("Player is " + currentPlayer() + " Can't jump your own piece");
                     }
                     else if(board[move.toRow][move.toColumn].player() == Player.WHITE) {
-                //FIXME: implement better checking, ie: wBishop jumping over wPawn
                         player = Player.WHITE;
                         setNextPlayer(player);
                         System.out.println("Player is " + currentPlayer() + " Can't jump your own piece");
@@ -148,9 +149,9 @@ public class ChessModel implements IChessModel {
 
                 if (board[move.fromRow][move.fromColumn] != null && currentPlayer() == Player.WHITE) {
                     if (board[move.fromRow][move.fromColumn].isValidMove(move, board) && currentPlayer() == Player.WHITE) {
-
+                        //
                         player = Player.BLACK;
-                        setNextPlayer(player);
+
                         /*********************************************************
                          * Since white always goes first the undo move button
                          * will store moves as 0 and all ints even(move % 2 == 0)
@@ -160,6 +161,9 @@ public class ChessModel implements IChessModel {
                         toMoveRow.add(move.toRow);
                         toMoveCol.add(move.toColumn);
                         pieceMemory.add(board[move.fromRow][move.fromColumn].type());
+
+
+
 
                         System.out.println("Player is " + currentPlayer() + " Valid move, carry on");
                         return true;
@@ -173,6 +177,7 @@ public class ChessModel implements IChessModel {
                     System.out.println("Can't move Black yet");
                     return false;
                 }
+
 
                 if (move.fromRow == move.toRow && move.fromColumn == move.toColumn && currentPlayer() == Player.BLACK) {
                     player = Player.BLACK;
@@ -201,7 +206,7 @@ public class ChessModel implements IChessModel {
                     if (board[move.fromRow][move.fromColumn].isValidMove(move, board) && currentPlayer() == Player.BLACK) {
 
                         player = Player.WHITE;
-                        setNextPlayer(player);
+
                         System.out.println("Player is " + currentPlayer() + " Valid move, carry on");
                         fromMoveRow.add(move.fromRow);
                         fromMoveCol.add(move.fromColumn);
@@ -216,38 +221,183 @@ public class ChessModel implements IChessModel {
                 break;
         }
 
-        return valid;
+        return false;
         }
 
 
     public void move(Move move) {
-
         board[move.toRow][move.toColumn] = board[move.fromRow][move.fromColumn];
+
         board[move.fromRow][move.fromColumn] = null;
+        //Used because the players are switched before move is done executing
+        if(currentPlayer() == Player.WHITE) {
+            if(inCheck(Player.WHITE)){
+                JOptionPane.showMessageDialog(null, "You are in check! Undo move!");
+            }
+        }else {
+            if(inCheck(Player.BLACK)){
+                JOptionPane.showMessageDialog(null, "You are in check! Undo move!");
+            }
+        }
+
 
     }
 
+
     /***
-     * Finds the king black or white player and determines if you are in check,
+     * Finds the king black or white player and determines if you are in check using two if statement algorithims
+     * Knight Check is first then the other pieces,
+     *
      * @param  p {@link W18project3.Move} the Player being checked
      * @return
      */
     public boolean inCheck(Player p) {
-        //FIXME: inCheck() returns false until you are at step 9
         //Find king
-        int kingRow;
-        int kingCol;
-        for(int r = 0; r < numRows(); r++) {
-            for(int c = 0; c < numColumns(); c++) {
-                if(board[r][c].type().contains("W19Project3GIVETOSTUDENTS.King") && board[r][c].player() == p) {
-                    kingRow = r;
-                    kingCol = c;
+
+        int kingRow = 0;
+        int kingCol = 0;
+        System.out.println(p);
+        boolean foundKing = false;
+        boolean doneKnight = false;
+        boolean donePieces = false;
+
+        if(!foundKing) {
+            for(int r = 0; r < numRows(); r++) {
+                for(int c = 0; c < numColumns(); c++) {
+                    if(board[r][c] != null) {
+                        if (board[r][c].type().contains("W19Project3GIVETOSTUDENTS.King") && board[r][c].player() == p) {
+                            kingRow = r;
+                            kingCol = c;
+                            foundKing = true;
+                        }
+
+                    }
                 }
             }
         }
 
-        boolean valid = false;
-        return valid;
+        IChessPiece knight = new Knight(p);
+        Move move = new Move(kingRow, kingCol, kingRow + 2, kingCol + 1);
+        Move move2 = new Move(kingRow, kingCol, kingRow + 2, kingCol - 1);
+        Move move3 = new Move(kingRow, kingCol, kingRow - 2, kingCol + 1);
+        Move move4 = new Move(kingRow, kingCol, kingRow - 2, kingCol - 1);
+        Move move5 = new Move(kingRow, kingCol, kingRow + 1, kingCol + 2);
+        Move move6 = new Move(kingRow, kingCol, kingRow - 1, kingCol + 2);
+        Move move7 = new Move(kingRow, kingCol, kingRow + 1, kingCol - 2);
+        Move move8 = new Move(kingRow, kingCol, kingRow - 1, kingCol - 2);
+
+        if(knight.isValidMove(move, board)) {
+            if(kingRow + 2 <= 7 && kingCol + 1 <= 7) {
+                if(board[kingRow + 2][kingCol + 1] != null) {
+                    if(board[kingRow + 2][kingCol + 1].type().contains("W19Project3GIVETOSTUDENTS.Knight")){
+                        if(board[kingRow + 2][kingCol + 1].player() != board[kingRow][kingCol].player()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }else if(knight.isValidMove(move2, board)) {
+            if (kingRow + 2 <= 7 && kingCol - 1 >= 0) {
+                if (board[kingRow + 2][kingCol - 1] != null) {
+                    if (board[kingRow + 2][kingCol - 1].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
+                        if (board[kingRow + 2][kingCol - 1].player() != board[kingRow][kingCol].player()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }else if(knight.isValidMove(move3, board)) {
+            if (kingRow - 2 >= 0 && kingCol + 1 <= 7) {
+                if (board[kingRow - 2][kingCol + 1] != null) {
+                    if (board[kingRow - 2][kingCol + 1].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
+                        if (board[kingRow - 2][kingCol + 1].player() != board[kingRow][kingCol].player()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }else if(knight.isValidMove(move4, board)) {
+            if (kingRow - 2 >= 0 && kingCol - 1 >= 0) {
+                if (board[kingRow - 2][kingCol - 1] != null) {
+                    if (board[kingRow - 2][kingCol - 1].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
+                        if (board[kingRow - 2][kingCol - 1].player() != board[kingRow][kingCol].player()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }else if(knight.isValidMove(move5, board)) {
+            if (kingRow + 1 <= 7 && kingCol + 2 <= 7) {
+                if (board[kingRow + 1][kingCol + 2] != null) {
+                    if (board[kingRow + 1][kingCol + 2].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
+                        if (board[kingRow + 1][kingCol + 2].player() != board[kingRow][kingCol].player()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }else if(knight.isValidMove(move6, board)) {
+            if (kingRow - 1 >= 0 && kingCol + 2 <= 7) {
+                if (board[kingRow - 1][kingCol + 2] != null) {
+                    if (board[kingRow - 1][kingCol + 2].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
+                        if (board[kingRow - 1][kingCol + 2].player() != board[kingRow][kingCol].player()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }else if(knight.isValidMove(move7, board)) {
+            if (kingRow + 1 <= 7 && kingCol - 2 >= 0) {
+                if (board[kingRow + 1][kingCol - 2] != null) {
+                    if (board[kingRow + 1][kingCol - 2].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
+                        if (board[kingRow + 1][kingCol - 2].player() != board[kingRow][kingCol].player()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }else if(knight.isValidMove(move8, board)) {
+            if (kingRow - 1 >= 0 && kingCol - 2 >= 0) {
+                if (board[kingRow - 1][kingCol - 2] != null) {
+                    if (board[kingRow - 1][kingCol - 2].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
+                        if (board[kingRow - 1][kingCol - 2].player() != board[kingRow][kingCol].player()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+        System.out.println("Current player is " + p.toString());
+        System.out.println("DEBUG: King r: " + kingRow);
+        System.out.println("DEBUG: King c: " + kingCol);
+        //Knight check
+
+
+
+
+        //Check if you are vulnerable to attack(exposed tiles)
+
+
+
+
+
+
+
+
+
+
+
+        /**************************************************************************************************************
+         * Other Pieces Algorithim: Checks 3x3ish area around king. Any tile containing a friendly is set to be ignored
+         * Check for pawns in the diagonals corresponding to the player, check for king(ALL), check for queen(ALL),
+         * check for bishop(ALL). Any tile that is null is checked for Rooks and Queen (UP,DOWN,LEFT,RIGHT)
+         * Bishop and Queen (Up-Left,Up-Right,Down-Left,DownRight
+         **************************************************************************************************************/
+
+        return false;
     }
 
     public Player currentPlayer() {
