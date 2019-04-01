@@ -222,7 +222,7 @@ public class ChessModel implements IChessModel {
         }
 
         return false;
-        }
+    }
 
 
     public void move(Move move) {
@@ -257,115 +257,189 @@ public class ChessModel implements IChessModel {
         int kingRow = 0;
         int kingCol = 0;
         System.out.println(p);
-        boolean doneKnight = false;
-        boolean donePieces = false;
+        boolean knightFound = false;
+        boolean twoKnight = false;
+        int[] knightLocation = new int[2];
+        int[] knightTwoLocation = new int[2];
 
 
-            for(int r = 0; r < numRows(); r++) {
-                for(int c = 0; c < numColumns(); c++) {
-                    if(board[r][c] != null) {
-                        if (board[r][c].type().contains("W19Project3GIVETOSTUDENTS.King") && board[r][c].player() == p) {
-                            kingRow = r;
-                            kingCol = c;
 
-                        }
+        for(int r = 0; r < numRows(); r++) {
+            for(int c = 0; c < numColumns(); c++) {
+                if(board[r][c] != null) {
+                    if (board[r][c].type().contains("W19Project3GIVETOSTUDENTS.King") && board[r][c].player() != currentPlayer()) {
+                        kingRow = r;
+                        kingCol = c;
 
                     }
+                    if(board[r][c].type().contains("W19Project3GIVETOSTUDENTS.Knight") && board[r][c].player() == currentPlayer()) {
+                        if(!knightFound) {
+                            knightLocation[0] = r;
+                            knightLocation[1] = c;
+                            knightFound = true;
+                        }else {
+                            twoKnight = true;
+                            knightTwoLocation[0] = r;
+                            knightTwoLocation[1] = c;
+                        }
+                    }
+
                 }
             }
+        }
+
 
         System.out.println("DEBUG kingRow: " + kingRow);
         System.out.println("DEBUG kingCol: " + kingCol);
+        //Checks for knight
 
-            //Begins scanning different tiles near the king and expand to check each piece if it can kill the king
 
-            for(int r = 0; r < 8; r++ ){
-                //Treat as board[rowDirections][colDirections]
-                // For loop Cycle: NW, N, NE, W, E, SE, S, SW
-                int[] rowDirections = {-1, -1, -1, 0, 0, 1, 1, 1};
-                int[] colDirections = {-1, 0, 1, -1, 1, -1, 0, 1};
 
-                int row = kingRow;
-                int col = kingCol;
-                int rowIncrement = rowDirections[r];
-                int colIncrement = colDirections[r];
-                for(int c = 0; c < 8; c++) {
 
-                    row = row + rowIncrement;
-                    col = col + colIncrement;
-                    if(row < 0 || row > 7 || col < 0 || col > 7) {
-                        break;
-                    }else {
-                        if(board[row][col] != null) {
-                            /************************************************************************************
-                             * isValidMove() is scanned if it matches a enemy piece and has the ability to attack
-                             ***********************************************************************************/
-                            System.out.println("TAG" + board[row][col].player());
-                            System.out.println("TAG" + currentPlayer());
-                            if(board[row][col].player() != currentPlayer()) {
-                                System.out.println(board[row][col].type());
-                                //bishop
+        //Begins scanning different tiles near the king and expand to check each piece if it can kill the king
 
-                                /***********************************************************************
-                                 * These branches check for bishop, rook, queen, and knight lethal moves to king
-                                 **********************************************************************/
-                                if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Bishop")) {
-                                    Bishop bishop = new Bishop(p);
-                                    Move move = new Move(row, col, kingRow, kingCol);
-                                    System.out.println("FOUND A BISHOP");
-                                    if (bishop.isValidMove(move, board)) {
-                                        return true;
-                                    }
-                                }else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Rook")) {
-                                    Rook rook = new Rook(p);
-                                    Move move = new Move(row, col, kingRow, kingCol);
-                                    System.out.println("FOUND A ROOK");
-                                    if (rook.isValidMove(move, board)) {
-                                        return true;
-                                    }
-                                }else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
-                                    Knight knight = new Knight(p);
-                                    Move move = new Move(row, col, kingRow, kingCol);
-                                    System.out.println("FOUND A KNIGHT");
-                                    if(knight.isValidMove(move,board)) {
+        for(int r = 0; r < 8; r++ ){
+            // For loop Cycle: NW, N, NE, W, E, SE, S, SW
+            int[] rowDirections = {-1, -1, -1, 0, 0, 1, 1, 1};
+            int[] colDirections = {-1, 0, 1, -1, 1, -1, 0, 1};
 
-                                        return true;
-                                    }
-                                }else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Queen")) {
-                                    Queen queen = new Queen(p);
-                                    Move move = new Move(row, col, kingRow, kingCol);
-                                    if(queen.isValidMove(move,board)){
-                                        return true;
-                                    }
-                                } else {
-                                    if(r == 0) {
-                                        /**********************************************************************************
-                                         * Pawns and kings have to get reeeealll close to kill the king thus r == 0
-                                         *********************************************************************************/
-                                        if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Pawn")){
-                                            Pawn pawn = new Pawn(p);
-                                            Move move = new Move(row, col, kingRow, kingCol);
-                                            System.out.println("FOUND A PAWN");
-                                            if(pawn.isValidMove(move,board)) {
-                                                return true;
-                                            }
-                                        }
-                                        if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.King")) {
-                                            King king = new King(p);
-                                            Move move = new Move(row, col, kingRow, kingCol);
-                                            System.out.println("FOUND A KING");
-                                            if(king.isValidMove(move,board)) {
-                                                return true;
-                                            //Holy cow batman thats a lot of braces
-                                            }
-                                        }
-                                    }
+            int row = kingRow;
+            int col = kingCol;
+            int rowIncrement = rowDirections[r];
+            int colIncrement = colDirections[r];
+            for(int c = 0; c < 8; c++) {
+
+                row = row + rowIncrement;
+                col = col + colIncrement;
+                if(row < 0 || row > 7 || col < 0 || col > 7) {
+                    break;
+                }else {
+                    if(board[row][col] != null) {
+                        /************************************************************************************
+                         * isValidMove() is scanned if it matches a enemy piece and has the ability to attack
+                         ***********************************************************************************/
+                        if(board[row][col].player() == currentPlayer()) {
+                            System.out.println(board[row][col].type());
+                            //bishop
+
+                            /***********************************************************************
+                             * These branches check for bishop, rook, queen, and pawn lethal moves to king
+                             **********************************************************************/
+                            if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Bishop")) {
+                                Bishop bishop = new Bishop(p);
+                                Move move = new Move(row, col, kingRow, kingCol);
+                                System.out.println("FOUND A BISHOP");
+                                if (bishop.isValidMove(move, board)) {
+                                    return true;
                                 }
                             }
+
+                            else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Rook")) {
+                                Rook rook = new Rook(p);
+                                Move move = new Move(row, col, kingRow, kingCol);
+                                System.out.println("FOUND A ROOK");
+                                if (rook.isValidMove(move, board)) {
+                                    return true;
+                                }
+                            }
+
+                            else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Queen")) {
+                                Queen queen = new Queen(p);
+                                Move move = new Move(row, col, kingRow, kingCol);
+                                if(queen.isValidMove(move,board)){
+                                    return true;
+                                }
+                            }
+
+                            else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Knight")){
+                                Knight knight = new Knight(p);
+                                Move move = new Move(row, col, kingRow, kingCol);
+                                if(knight.isValidMove(move,board)){
+                                    return true;
+                                }
+                            }
+
+
+                            if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Pawn")){
+                                /***************************************************************************************
+                                 * Due to how inCheck and Pawn differ in how player is used we cannot use Pawn.isValid()
+                                 **************************************************************************************/
+                                System.out.println("FOUND A PAWN");
+
+                                if(p == Player.BLACK) {
+                                    if(row + 1 == kingRow && (col + 1 == kingCol || col - 1 == kingCol)) {
+                                        return true;
+                                    }
+                                }else if(p == Player.WHITE){
+                                    if (row - 1 == kingRow && (col + 1 == kingCol || col - 1 == kingCol)) {
+                                        return true;
+                                    }
+                                }
+
+                            }
+
+                            if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.King")) {
+                                King king = new King(p);
+                                Move move = new Move(row, col, kingRow, kingCol);
+                                System.out.println("FOUND A KING");
+                                if(king.isValidMove(move,board)){
+                                    return true;
+                                }
+
+                            }
+
                         }
+
+//                        else if(board[row][col].player() != currentPlayer()) {
+//                            System.out.println(board[row][col].type());
+//                            //bishop
+//
+//                            /***********************************************************************
+//                             * These branches check for bishop, rook, queen, and pawn lethal moves to king
+//                             **********************************************************************/
+//                            if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Bishop")) {
+//                                Bishop bishop = new Bishop(p);
+//                                Move move = new Move(row, col, kingRow, kingCol);
+//                                System.out.println("FOUND A BISHOP");
+//                                if (bishop.isValidMove(move, board)) {
+//                                    return true;
+//                                }
+//                            }
+//                            else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Rook")) {
+//                                Rook rook = new Rook(p);
+//                                Move move = new Move(row, col, kingRow, kingCol);
+//                                System.out.println("FOUND A ROOK");
+//                                if (rook.isValidMove(move, board)) {
+//                                    return true;
+//                                }
+//                            }
+//
+//
+//
+//                            else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Queen")) {
+//                                Queen queen = new Queen(p);
+//                                Move move = new Move(row, col, kingRow, kingCol);
+//                                if(queen.isValidMove(move,board)){
+//                                    return true;
+//                                }
+//                            }
+//
+//                            else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Knight")){
+//                                Knight knight = new Knight(p);
+//                                Move move = new Move(row, col, kingRow, kingCol);
+//                                if(knight.isValidMove(move,board)){
+//                                    return true;
+//                                }
+//                            }
+//
+//
+//                        }
                     }
                 }
             }
+        }
+
+
 
         return false;
     }
