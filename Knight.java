@@ -22,9 +22,7 @@ public class Knight extends ChessPiece {
 
 		//Knight move algorithm:
         //Any case for L moves that move in the y axis: left or right col move
-        /**
-         *
-         */
+
         if(move.fromRow + 2 == move.toRow) {
             if(move.fromColumn + 1 == move.toColumn) {
                 return true;
@@ -50,6 +48,7 @@ public class Knight extends ChessPiece {
                 return true;
             }
         }
+        //anything else is false
         return false;
 		
 	}

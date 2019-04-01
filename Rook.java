@@ -25,14 +25,14 @@ public class Rook extends ChessPiece {
 
         if((move.fromRow < move.toRow) && (move.fromColumn == move.toColumn)) {
             for(int start = move.fromRow + 1; start <= move.toRow; start++) {
-                if(board[start][move.fromColumn] != null) {
+                if(board[start][move.fromColumn] != null && start != move.toRow) {
                     return false;
                 }
             }
             return true;
         } else if(move.fromRow > move.toRow && move.fromColumn == move.toColumn) {
             for(int start = move.fromRow - 1; start >= move.toRow; start--) {
-                if(board[start][move.fromColumn] != null) {
+                if(board[start][move.fromColumn] != null && start != move.toRow) {
                     return false;
                 }
             }
@@ -41,14 +41,14 @@ public class Rook extends ChessPiece {
         //Valid move check for horizontal movement, plus or minus
         else if(move.fromRow == move.toRow && move.fromColumn < move.toColumn) {
             for(int start = move.fromColumn + 1; start <= move.toColumn; start++) {
-                if(board[move.fromRow][start] != null) {
+                if(board[move.fromRow][start] != null && start != move.toColumn) {
                     return false;
                 }
             }
             return true;
         } else if(move.fromRow == move.toRow && move.fromColumn > move.toColumn) {
             for(int start = move.fromColumn - 1; start >= move.toColumn; start--) {
-                if(board[move.fromRow][start] != null) {
+                if(board[move.fromRow][start] != null && start != move.toColumn) {
                     return false;
                 }
             }

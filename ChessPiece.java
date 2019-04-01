@@ -11,8 +11,10 @@ public abstract class ChessPiece implements IChessPiece {
 
 	private Player owner;
 
+
 	protected ChessPiece(Player player) {
 		this.owner = player;
+
 
 	}
 
@@ -22,10 +24,16 @@ public abstract class ChessPiece implements IChessPiece {
 		return owner;
 	}
 
-
+    /***
+     * ChessPiece(): Responsible for telling whose turn is it
+     * @param move  a {@link W18project3.Move} object describing the move to be made.
+     * @param board the {@link W18project3.IChessBoard} in which this piece resides.
+     * @return
+     */
 	public boolean isValidMove(Move move, IChessPiece[][] board) {
 		boolean valid = false;
 
-		return valid;
+
+		return false;
 	}
 }
