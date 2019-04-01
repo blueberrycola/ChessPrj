@@ -257,145 +257,115 @@ public class ChessModel implements IChessModel {
         int kingRow = 0;
         int kingCol = 0;
         System.out.println(p);
-        boolean foundKing = false;
         boolean doneKnight = false;
         boolean donePieces = false;
 
-        if(!foundKing) {
+
             for(int r = 0; r < numRows(); r++) {
                 for(int c = 0; c < numColumns(); c++) {
                     if(board[r][c] != null) {
                         if (board[r][c].type().contains("W19Project3GIVETOSTUDENTS.King") && board[r][c].player() == p) {
                             kingRow = r;
                             kingCol = c;
-                            foundKing = true;
+
                         }
 
                     }
                 }
             }
-        }
 
-        IChessPiece knight = new Knight(p);
-        Move move = new Move(kingRow, kingCol, kingRow + 2, kingCol + 1);
-        Move move2 = new Move(kingRow, kingCol, kingRow + 2, kingCol - 1);
-        Move move3 = new Move(kingRow, kingCol, kingRow - 2, kingCol + 1);
-        Move move4 = new Move(kingRow, kingCol, kingRow - 2, kingCol - 1);
-        Move move5 = new Move(kingRow, kingCol, kingRow + 1, kingCol + 2);
-        Move move6 = new Move(kingRow, kingCol, kingRow - 1, kingCol + 2);
-        Move move7 = new Move(kingRow, kingCol, kingRow + 1, kingCol - 2);
-        Move move8 = new Move(kingRow, kingCol, kingRow - 1, kingCol - 2);
+        System.out.println("DEBUG kingRow: " + kingRow);
+        System.out.println("DEBUG kingCol: " + kingCol);
 
-        if(knight.isValidMove(move, board)) {
-            if(kingRow + 2 <= 7 && kingCol + 1 <= 7) {
-                if(board[kingRow + 2][kingCol + 1] != null) {
-                    if(board[kingRow + 2][kingCol + 1].type().contains("W19Project3GIVETOSTUDENTS.Knight")){
-                        if(board[kingRow + 2][kingCol + 1].player() != board[kingRow][kingCol].player()) {
-                            return true;
+            //Begins scanning different tiles near the king and expand to check each piece if it can kill the king
+
+            for(int r = 0; r < 8; r++ ){
+                //Treat as board[rowDirections][colDirections]
+                // For loop Cycle: NW, N, NE, W, E, SE, S, SW
+                int[] rowDirections = {-1, -1, -1, 0, 0, 1, 1, 1};
+                int[] colDirections = {-1, 0, 1, -1, 1, -1, 0, 1};
+
+                int row = kingRow;
+                int col = kingCol;
+                int rowIncrement = rowDirections[r];
+                int colIncrement = colDirections[r];
+                for(int c = 0; c < 8; c++) {
+
+                    row = row + rowIncrement;
+                    col = col + colIncrement;
+                    if(row < 0 || row > 7 || col < 0 || col > 7) {
+                        break;
+                    }else {
+                        if(board[row][col] != null) {
+                            /************************************************************************************
+                             * isValidMove() is scanned if it matches a enemy piece and has the ability to attack
+                             ***********************************************************************************/
+                            System.out.println("TAG" + board[row][col].player());
+                            System.out.println("TAG" + currentPlayer());
+                            if(board[row][col].player() != currentPlayer()) {
+                                System.out.println(board[row][col].type());
+                                //bishop
+
+                                /***********************************************************************
+                                 * These branches check for bishop, rook, queen, and knight lethal moves to king
+                                 **********************************************************************/
+                                if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Bishop")) {
+                                    Bishop bishop = new Bishop(p);
+                                    Move move = new Move(row, col, kingRow, kingCol);
+                                    System.out.println("FOUND A BISHOP");
+                                    if (bishop.isValidMove(move, board)) {
+                                        return true;
+                                    }
+                                }else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Rook")) {
+                                    Rook rook = new Rook(p);
+                                    Move move = new Move(row, col, kingRow, kingCol);
+                                    System.out.println("FOUND A ROOK");
+                                    if (rook.isValidMove(move, board)) {
+                                        return true;
+                                    }
+                                }else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
+                                    Knight knight = new Knight(p);
+                                    Move move = new Move(row, col, kingRow, kingCol);
+                                    System.out.println("FOUND A KNIGHT");
+                                    if(knight.isValidMove(move,board)) {
+
+                                        return true;
+                                    }
+                                }else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Queen")) {
+                                    Queen queen = new Queen(p);
+                                    Move move = new Move(row, col, kingRow, kingCol);
+                                    if(queen.isValidMove(move,board)){
+                                        return true;
+                                    }
+                                } else {
+                                    if(r == 0) {
+                                        /**********************************************************************************
+                                         * Pawns and kings have to get reeeealll close to kill the king thus r == 0
+                                         *********************************************************************************/
+                                        if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Pawn")){
+                                            Pawn pawn = new Pawn(p);
+                                            Move move = new Move(row, col, kingRow, kingCol);
+                                            System.out.println("FOUND A PAWN");
+                                            if(pawn.isValidMove(move,board)) {
+                                                return true;
+                                            }
+                                        }
+                                        if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.King")) {
+                                            King king = new King(p);
+                                            Move move = new Move(row, col, kingRow, kingCol);
+                                            System.out.println("FOUND A KING");
+                                            if(king.isValidMove(move,board)) {
+                                                return true;
+                                            //Holy cow batman thats a lot of braces
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
-        }else if(knight.isValidMove(move2, board)) {
-            if (kingRow + 2 <= 7 && kingCol - 1 >= 0) {
-                if (board[kingRow + 2][kingCol - 1] != null) {
-                    if (board[kingRow + 2][kingCol - 1].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
-                        if (board[kingRow + 2][kingCol - 1].player() != board[kingRow][kingCol].player()) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }else if(knight.isValidMove(move3, board)) {
-            if (kingRow - 2 >= 0 && kingCol + 1 <= 7) {
-                if (board[kingRow - 2][kingCol + 1] != null) {
-                    if (board[kingRow - 2][kingCol + 1].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
-                        if (board[kingRow - 2][kingCol + 1].player() != board[kingRow][kingCol].player()) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }else if(knight.isValidMove(move4, board)) {
-            if (kingRow - 2 >= 0 && kingCol - 1 >= 0) {
-                if (board[kingRow - 2][kingCol - 1] != null) {
-                    if (board[kingRow - 2][kingCol - 1].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
-                        if (board[kingRow - 2][kingCol - 1].player() != board[kingRow][kingCol].player()) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }else if(knight.isValidMove(move5, board)) {
-            if (kingRow + 1 <= 7 && kingCol + 2 <= 7) {
-                if (board[kingRow + 1][kingCol + 2] != null) {
-                    if (board[kingRow + 1][kingCol + 2].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
-                        if (board[kingRow + 1][kingCol + 2].player() != board[kingRow][kingCol].player()) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }else if(knight.isValidMove(move6, board)) {
-            if (kingRow - 1 >= 0 && kingCol + 2 <= 7) {
-                if (board[kingRow - 1][kingCol + 2] != null) {
-                    if (board[kingRow - 1][kingCol + 2].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
-                        if (board[kingRow - 1][kingCol + 2].player() != board[kingRow][kingCol].player()) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }else if(knight.isValidMove(move7, board)) {
-            if (kingRow + 1 <= 7 && kingCol - 2 >= 0) {
-                if (board[kingRow + 1][kingCol - 2] != null) {
-                    if (board[kingRow + 1][kingCol - 2].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
-                        if (board[kingRow + 1][kingCol - 2].player() != board[kingRow][kingCol].player()) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }else if(knight.isValidMove(move8, board)) {
-            if (kingRow - 1 >= 0 && kingCol - 2 >= 0) {
-                if (board[kingRow - 1][kingCol - 2] != null) {
-                    if (board[kingRow - 1][kingCol - 2].type().contains("W19Project3GIVETOSTUDENTS.Knight")) {
-                        if (board[kingRow - 1][kingCol - 2].player() != board[kingRow][kingCol].player()) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-
-
-
-        System.out.println("Current player is " + p.toString());
-        System.out.println("DEBUG: King r: " + kingRow);
-        System.out.println("DEBUG: King c: " + kingCol);
-        //Knight check
-
-
-
-
-        //Check if you are vulnerable to attack(exposed tiles)
-
-
-
-
-
-
-
-
-
-
-
-        /**************************************************************************************************************
-         * Other Pieces Algorithim: Checks 3x3ish area around king. Any tile containing a friendly is set to be ignored
-         * Check for pawns in the diagonals corresponding to the player, check for king(ALL), check for queen(ALL),
-         * check for bishop(ALL). Any tile that is null is checked for Rooks and Queen (UP,DOWN,LEFT,RIGHT)
-         * Bishop and Queen (Up-Left,Up-Right,Down-Left,DownRight
-         **************************************************************************************************************/
 
         return false;
     }
