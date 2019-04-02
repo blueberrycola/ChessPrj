@@ -29,6 +29,9 @@ public class ChessPanel extends JPanel {
 
     private listener listener;
 
+    /**************************************************************************************************************
+     * Constructor responsible for making all the things needed for the GUI such as the panel itself or undo button
+     *************************************************************************************************************/
     public ChessPanel() {
         model = new ChessModel();
         board = new JButton[model.numRows()][model.numColumns()];
@@ -62,7 +65,11 @@ public class ChessPanel extends JPanel {
         firstTurnFlag = true;
     }
 
-
+    /********************************************
+     * Sets the color of the checker styled board
+     * @param r
+     * @param c
+     *******************************************/
     private void setBackGroundColor(int r, int c) {
         if ((c % 2 == 1 && r % 2 == 0) || (c % 2 == 0 && r % 2 == 1)) {
             board[r][c].setBackground(Color.LIGHT_GRAY);
@@ -71,6 +78,11 @@ public class ChessPanel extends JPanel {
         }
     }
 
+    /***********************************************************************
+     * Responsible for assigning where the chess pieces go on the white side
+     * @param r
+     * @param c
+     ***********************************************************************/
     private void placeWhitePieces(int r, int c) {
         //if the type equals knight then initialize wKnight
         if (model.pieceAt(r, c).type().equals("W19Project3GIVETOSTUDENTS.Pawn")) {
@@ -103,6 +115,11 @@ public class ChessPanel extends JPanel {
             board[r][c].addActionListener(listener);
         }
     }
+    /***********************************************************************
+     * Responsible for assigning where the chess pieces go on the black side
+     * @param r
+     * @param c
+     ***********************************************************************/
     private void placeBlackPieces(int r, int c) {
         //if the type equals knight then initialize wKnight
         if (model.pieceAt(r, c).type().equals("W19Project3GIVETOSTUDENTS.Pawn")) {
@@ -136,6 +153,9 @@ public class ChessPanel extends JPanel {
         }
     }
 
+    /******************************************************
+     * Instantiates needed image icons for the chess pieces
+     *****************************************************/
     private void createIcons() {
         // Sets the Image for white player pieces
         wRook = new ImageIcon("./src/W19Project3/wRook.png");
@@ -154,7 +174,9 @@ public class ChessPanel extends JPanel {
 
     }
 
-    // method that updates the board
+    /*****************************************************************
+     * Method responsible for updating the current state of ChessModel
+     ****************************************************************/
     private void displayBoard() {
 
         for (int r = 0; r < 8; r++) {
@@ -203,16 +225,13 @@ public class ChessPanel extends JPanel {
         }
         repaint();
     }
-    //Work on when reaching step 9*
-    public boolean inCheck() {
-        return false;
-    }
-    public boolean isComplete() {
-        return false;
-    }
-    //*
 
-    // inner class that represents action listener for buttons
+
+    /************************************************************************************
+     * Inner class responsible for any JButton that has an action listener assigned to it
+     * board[r][c] event is any button that is also a chess piece
+     * undoButton event is when you click the undo button
+     ***********************************************************************************/
     private class listener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             for (int r = 0; r < model.numRows(); r++) {

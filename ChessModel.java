@@ -15,6 +15,10 @@ public class ChessModel implements IChessModel {
 
     // declare other instance variables as needed
 
+    /*******************************************************************************************************
+     * This constructor places all pieces where they need to be on the board and initialize variable needed,
+     * makes the IChessPiece[][] initialized, and uses a for loop to create pawns.
+     ******************************************************************************************************/
     public ChessModel() {
 
 
@@ -29,6 +33,13 @@ public class ChessModel implements IChessModel {
         toMoveRow = new ArrayList<>();
         toMoveCol = new ArrayList<>();
         pieceMemory = new ArrayList<>();
+
+        //In some instances of testing this is needed due to outOfBoundsException
+        fromMoveRow.add(0);
+        fromMoveCol.add(0);
+        toMoveCol.add(0);
+        toMoveRow.add(0);
+        pieceMemory.add("Null");
 
         board[7][0] = new Rook(Player.WHITE);
         board[7][1] = new Knight(Player.WHITE);
@@ -62,6 +73,10 @@ public class ChessModel implements IChessModel {
 
     }
 
+    /*****************************************************************************************************************
+     * Method responsible for undoing moves. Dependant on what the arraylists that store moves and piece type in order
+     * to reverse
+     ****************************************************************************************************************/
     public void undoButton() {
         System.out.println(fromMoveCol.size());
         if(fromMoveCol.size() == 0) {
@@ -85,7 +100,22 @@ public class ChessModel implements IChessModel {
             if(pieceMemory.get(undoVal).contains("W19Project3GIVETOSTUDENTS.Pawn")) {
                 board[fromMoveRow.get(undoVal)][fromMoveCol.get(undoVal)] = new Pawn(currentPlayer());
                 board[toMoveRow.get(undoVal)][toMoveCol.get(undoVal)] = null;
-            }else {
+            }else if(pieceMemory.get(undoVal).contains("W19Project3GIVETOSTUDENTS.Knight")) {
+                board[fromMoveRow.get(undoVal)][fromMoveCol.get(undoVal)] = new Knight(currentPlayer());
+                board[toMoveRow.get(undoVal)][toMoveCol.get(undoVal)] = null;
+            }else if (pieceMemory.get(undoVal).contains("W19Project3GIVETOSTUDENTS.King")) {
+                board[fromMoveRow.get(undoVal)][fromMoveCol.get(undoVal)] = new King(currentPlayer());
+                board[toMoveRow.get(undoVal)][toMoveCol.get(undoVal)] = null;
+            }else if (pieceMemory.get(undoVal).contains("W19Project3GIVETOSTUDENTS.Queen")) {
+                board[fromMoveRow.get(undoVal)][fromMoveCol.get(undoVal)] = new Queen(currentPlayer());
+                board[toMoveRow.get(undoVal)][toMoveCol.get(undoVal)] = null;
+            }else if(pieceMemory.get(undoVal).contains("W19Project3GIVETOSTUDENTS.Bishop")) {
+                board[fromMoveRow.get(undoVal)][fromMoveCol.get(undoVal)] = new Bishop(currentPlayer());
+                board[toMoveRow.get(undoVal)][toMoveCol.get(undoVal)] = null;
+            }else if (pieceMemory.get(undoVal).contains("W19Project3GIVETOSTUDENTS.Rook")) {
+                board[fromMoveRow.get(undoVal)][fromMoveCol.get(undoVal)] = new Rook(currentPlayer());
+                board[toMoveRow.get(undoVal)][toMoveCol.get(undoVal)] = null;
+            } else {
                 setPiece(toMoveRow.get(undoVal), toMoveCol.get(undoVal), null);
                 setPiece(fromMoveRow.get(undoVal), fromMoveCol.get(undoVal) , temp);
             }
@@ -100,15 +130,24 @@ public class ChessModel implements IChessModel {
 
     }
 
+    /**************************************************************************************
+     * isComplete is in charge of telling us when the game almost all through if statements
+     * @return valid, a boolean value, either true or false
+     *************************************************************************************/
     public boolean isComplete() {
-        //FIXME: isComplete() return false until you are at step 10
+
         boolean valid = false;
         return valid;
     }
 
 
-
-    //isValidMove(): used for basic chessboard rules
+    /******************************************************************************************************************
+     * This method is responsible for enforcing game rules such as you cannot jump over pieces if you are not a knight,
+     * you cant attack your own piece, you cant move your piece on the same tile, you moved twice before the other
+     * player went, etc
+     * @param move a {@link W18project3.Move} object describing the move to be made.
+     * @return T or F, depending on if the move is valid or not
+     *****************************************************************************************************************/
     public boolean isValidMove(Move move) {
 
         currentPlayer();
@@ -224,7 +263,10 @@ public class ChessModel implements IChessModel {
         return false;
     }
 
-
+    /*******************************************************************************
+     * Method responcible for actually moving the chess piece object
+     * @param move a {@link W18project3.Move} object describing the move to be made.
+     ******************************************************************************/
     public void move(Move move) {
         board[move.toRow][move.toColumn] = board[move.fromRow][move.fromColumn];
 
@@ -244,13 +286,13 @@ public class ChessModel implements IChessModel {
     }
 
 
-    /***
+    /************************************************************************************************************
      * Finds the king black or white player and determines if you are in check using two if statement algorithims
      * Knight Check is first then the other pieces,
      *
      * @param  p {@link W18project3.Move} the Player being checked
      * @return
-     */
+     ***********************************************************************************************************/
     public boolean inCheck(Player p) {
         //Find king
 
@@ -272,7 +314,7 @@ public class ChessModel implements IChessModel {
                         kingCol = c;
 
                     }
-                    if(board[r][c].type().contains("W19Project3GIVETOSTUDENTS.Knight") && board[r][c].player() == currentPlayer()) {
+                    if(board[r][c].type().contains("W19Project3GIVETOSTUDENTS.Knight") && board[r][c].player() != currentPlayer()) {
                         if(!knightFound) {
                             knightLocation[0] = r;
                             knightLocation[1] = c;
@@ -284,6 +326,18 @@ public class ChessModel implements IChessModel {
                         }
                     }
 
+                }
+            }
+        }
+        int arrayIndex = toMoveRow.size() - 1;
+        if(pieceMemory.get(arrayIndex).contains("Knight")) {
+            if(board[toMoveCol.get(arrayIndex)][toMoveCol.get(arrayIndex)] != null) {
+                if (board[toMoveCol.get(arrayIndex)][toMoveCol.get(arrayIndex)].player() != currentPlayer()) {
+                    Knight knight = new Knight(p);
+                    Move move = new Move(toMoveRow.get(arrayIndex), toMoveCol.get(arrayIndex), kingRow, kingCol);
+                    if (knight.isValidMove(move, board)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -351,14 +405,6 @@ public class ChessModel implements IChessModel {
                                 }
                             }
 
-                            else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Knight")){
-                                Knight knight = new Knight(p);
-                                Move move = new Move(row, col, kingRow, kingCol);
-                                if(knight.isValidMove(move,board)){
-                                    return true;
-                                }
-                            }
-
 
                             if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Pawn")){
                                 /***************************************************************************************
@@ -390,50 +436,6 @@ public class ChessModel implements IChessModel {
 
                         }
 
-//                        else if(board[row][col].player() != currentPlayer()) {
-//                            System.out.println(board[row][col].type());
-//                            //bishop
-//
-//                            /***********************************************************************
-//                             * These branches check for bishop, rook, queen, and pawn lethal moves to king
-//                             **********************************************************************/
-//                            if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Bishop")) {
-//                                Bishop bishop = new Bishop(p);
-//                                Move move = new Move(row, col, kingRow, kingCol);
-//                                System.out.println("FOUND A BISHOP");
-//                                if (bishop.isValidMove(move, board)) {
-//                                    return true;
-//                                }
-//                            }
-//                            else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Rook")) {
-//                                Rook rook = new Rook(p);
-//                                Move move = new Move(row, col, kingRow, kingCol);
-//                                System.out.println("FOUND A ROOK");
-//                                if (rook.isValidMove(move, board)) {
-//                                    return true;
-//                                }
-//                            }
-//
-//
-//
-//                            else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Queen")) {
-//                                Queen queen = new Queen(p);
-//                                Move move = new Move(row, col, kingRow, kingCol);
-//                                if(queen.isValidMove(move,board)){
-//                                    return true;
-//                                }
-//                            }
-//
-//                            else if(board[row][col].type().contains("W19Project3GIVETOSTUDENTS.Knight")){
-//                                Knight knight = new Knight(p);
-//                                Move move = new Move(row, col, kingRow, kingCol);
-//                                if(knight.isValidMove(move,board)){
-//                                    return true;
-//                                }
-//                            }
-//
-//
-//                        }
                     }
                 }
             }
@@ -444,26 +446,54 @@ public class ChessModel implements IChessModel {
         return false;
     }
 
+    /********************************************
+     * Returns the player that is allowed to move
+     * @return Player.BLACK or Player.WHITE
+     *******************************************/
     public Player currentPlayer() {
         return player;
     }
 
+    /***
+     * returns the number of rows
+     * @return ALWAYS 8
+     */
     public int numRows() {
         return 8;
     }
 
+    /***
+     * returns the number of columns
+     * @return ALWAYS 8
+     */
     public int numColumns() {
         return 8;
     }
 
+    /****************************************************************************************
+     * method used to tell what piece is at a given location, very useful for debugging/JUnit
+     * @param row
+     * @param column
+     * @return String: IChessPiece.type()
+     ****************************************************************************************/
     public IChessPiece pieceAt(int row, int column) {
         return board[row][column];
     }
 
+    /****************************************************************************************************************
+     * Sets the next player to whatever player invoked it. ie: setNextPlayer(Player.black) --> player = Player.BLACK;
+     * @param turn
+     ***************************************************************************************************************/
     public void setNextPlayer(Player turn) {
         player = turn;
     }
 
+    /*****************************************************************************************
+     * Takes the coordinate that you enter and piece you are requesting to place and places it
+     * @param row
+     * @param column
+     * @param piece
+     ****************************************************************************************/
     public void setPiece(int row, int column, IChessPiece piece) {
         board[row][column] = piece;
     }

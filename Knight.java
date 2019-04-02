@@ -15,16 +15,19 @@ public class Knight extends ChessPiece {
 	    return "W19Project3GIVETOSTUDENTS.Knight";
 	}
 
-
+    /********************************************************************************
+     * Responsible for showing all moves possible for the knight chess piece
+     * @param move  a {@link W18project3.Move} object describing the move to be made.
+     * @param board the {@link W18project3.IChessBoard} in which this piece resides.
+     * @return True or False, Only true if the move is allowed by the if statements
+     *******************************************************************************/
 	public boolean isValidMove(Move move, IChessPiece[][] board){
 
 		boolean valid = true;
 
 		//Knight move algorithm:
         //Any case for L moves that move in the y axis: left or right col move
-        /**
-         *
-         */
+
         if(move.fromRow + 2 == move.toRow) {
             if(move.fromColumn + 1 == move.toColumn) {
                 return true;
@@ -50,6 +53,7 @@ public class Knight extends ChessPiece {
                 return true;
             }
         }
+        //anything else is false
         return false;
 		
 	}

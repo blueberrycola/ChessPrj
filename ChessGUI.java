@@ -19,3 +19,9 @@ public class ChessGUI {
         frame.setVisible(true);
     }
 }
+
+
+
+
+
+

@@ -41,16 +41,16 @@ public class Pawn extends ChessPiece {
 
             //Move up by one unit
             if(move.fromRow - 1 == move.toRow && move.fromColumn == move.toColumn){
-                    //Return true if going to empty space
-                    if(board[move.toRow][move.toColumn] == null) {
-                        firstTurn = false;
-                        return true;
-                        //I have no idea why but without this empty if statement the whole thing will crash after one move
-                    }
-                    //Return false if attacking own piece
-                    else if (board[move.toRow][move.toColumn].player() != null) {
-                        return false;
-                    }
+                //Return true if going to empty space
+                if(board[move.toRow][move.toColumn] == null) {
+                    firstTurn = false;
+                    return true;
+                    //I have no idea why but without this empty if statement the whole thing will crash after one move
+                }
+                //Return false if attacking own piece
+                else if (board[move.toRow][move.toColumn].player() != null) {
+                    return false;
+                }
                 if(firstTurn) {
                     firstTurn = false;
                 }
@@ -67,7 +67,6 @@ public class Pawn extends ChessPiece {
                 }
             }
         } else {
-            //FIXME: Add first turn buffed move
             //First turn check
             if(move.fromRow + 2 == move.toRow && move.fromColumn == move.toColumn && firstTurn) {
                 if(board[move.toRow][move.toColumn] != null || board[move.toRow - 1][move.toColumn] != null){

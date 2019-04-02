@@ -38,17 +38,17 @@ public class King extends ChessPiece {
     /*************************************************************************************************************
      * Checks if isValidMove can return true or false judged by comparing toColumn added with elements from
      * the following sequence {-1, 0, -1}
-     * @return check (will return false unless the other from tile is +1, 0, or -1 when compared to the 'toColumn'
+     * @return T or F (will return false unless the other from tile is +1, 0, or -1 when compared to the 'toColumn'
      ************************************************************************************************************/
 	public boolean threeColumnCheck(Move move, IChessPiece[][] board) {
-	    boolean check = false;
 	    if(move.fromColumn + 1 == move.toColumn) {
-	        check = true;
+	        return true;
         }else if(move.fromColumn == move.toColumn) {
-	        check = true;
+	        return true;
         }else if(move.fromColumn - 1 == move.toColumn) {
-	        check = true;
+	        return true;
+        } else {
+	        return false;
         }
-        return check;
     }
 }
