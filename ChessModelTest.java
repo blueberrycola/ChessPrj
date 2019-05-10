@@ -35,13 +35,24 @@ public class ChessModelTest {
     @Test
     public void inCheckKnight() {
         ChessModel model = new ChessModel();
+        model.blankBoard();
         King king = new King(Player.BLACK);
         Knight knight = new Knight(Player.WHITE);
-        model.setPiece(2,1,king);
-        model.setPiece(6,4,knight);
-        Move m = new Move(6,4,4,2);
+        model.setPiece(0,0,king);
+        model.setPiece(4,2,knight);
+        Move m = new Move(4,2,2,1);
         model.move(m);
+
         Assert.assertEquals(true, model.inCheck(Player.WHITE));
+
+
+
+
+
+
+
+
+
     }
     @Test
     public void undoNoMoves() {
@@ -133,11 +144,25 @@ public class ChessModelTest {
     @Test
     public void validMove() {
         ChessModel model = new ChessModel();
-        Knight knight = new Knight(Player.BLACK);
-        model.setPiece(0,0, knight);
-        Move m = new Move(0,0,2,1);
-        model.move(m);
-        Assert.assertEquals(true, model.isValidMove(m));
+        model.blankBoard();
+        Knight knight = new Knight(Player.WHITE);
+        model.setPiece(2,2,knight);
+        Move move = new Move(2,2,4,3);
+        Assert.assertEquals(true, model.isValidMove(move));
+    }
+    @Test
+    public void blankBoard() {
+        ChessModel test = new ChessModel();
+        test.blankBoard();
+        boolean flag = false;
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                if(test.pieceAt(i,j) != null) {
+                    flag = true;
+                }
+            }
+        }
+        Assert.assertFalse(flag);
     }
 
     //FIXME: add isComplete tests

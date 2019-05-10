@@ -4,6 +4,7 @@ import chess.*;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class ChessModel implements IChessModel {
     private IChessPiece[][] board;
@@ -81,6 +82,7 @@ public class ChessModel implements IChessModel {
         System.out.println(fromMoveCol.size());
         if(fromMoveCol.size() == 0) {
             JOptionPane.showMessageDialog(null,"There are no moves to reverse");
+            AI();
         } else {
 
 
@@ -135,7 +137,7 @@ public class ChessModel implements IChessModel {
      * @return valid, a boolean value, either true or false
      *************************************************************************************/
     public boolean isComplete() {
-
+        //fixme: add isComplete condition
         boolean valid = false;
         return valid;
     }
@@ -149,116 +151,77 @@ public class ChessModel implements IChessModel {
      * @return T or F, depending on if the move is valid or not
      *****************************************************************************************************************/
     public boolean isValidMove(Move move) {
+        /*
+           Conditionals to check: dont move in the same spot, dont move when it isnt your turn, dont move when hopping over
+           pieces-regardless of player type-unless knight
+         */
+        if(board[move.fromRow][move.fromColumn].type().contains("KNIGHT")) {
 
-        currentPlayer();
-        System.out.println("Player is " + currentPlayer());
-
-
-
-        switch(player) {
-            case WHITE:
-
-                if(board[move.fromRow][move.fromColumn].player() == Player.BLACK){
-                    System.out.println("Can't move Black yet");
+        } else {
+            String pieceName = board[move.fromRow][move.fromColumn].type();
+            //Checks if the move is valid for the piece
+            boolean validPieceMove = false;
+            if(pieceName.contains("KING")) {
+                King king = new King(player);
+                if(king.isValidMove(move, board)) {
+                    validPieceMove = true;
+                }
+            }else if(pieceName.contains("QUEEN")) {
+                Queen queen = new Queen(player);
+                if(queen.isValidMove(move, board)) {
+                    validPieceMove = true;
+                }
+            }else if(pieceName.contains("BISHOP")) {
+                Bishop bishop = new Bishop(player);
+                if(bishop.isValidMove(move, board)) {
+                    validPieceMove = true;
+                }
+            }else if(pieceName.contains("PAWN")) {
+                Pawn pawn = new Pawn(player);
+                if(pawn.isValidMove(move, board)) {
+                    validPieceMove = true;
+                }
+            }else if(pieceName.contains("ROOK")) {
+                Rook rook = new Rook(player);
+                if(rook.isValidMove(move, board)) {
+                    validPieceMove = true;
+                }
+            }
+            //if the piece move is valid for the given piece start checking for illegal moves, ie: rook over pawn
+            //At this given line the method has checked if the move is legal in relation to piece and movement but now
+            //we must check for jumping, double clicking, and friendly fire
+            if(validPieceMove) {
+                if(move.fromRow == move.toRow && move.fromColumn == move.toColumn) {
+                    System.out.println("You cant move in the same space");
                     return false;
-                }
+                } else if(pieceAt(move.toRow, move.toColumn).player() == pieceAt(move.fromRow, move.toColumn).player()) {
+                    System.out.println("You cannot attack a friendly");
+                } else {
+                    //Horizontal Movement Scan Loop
+                    if(move.fromRow != move.toRow && move.fromColumn == move.toColumn) {
 
-
-                if (move.fromRow == move.toRow && move.fromColumn == move.toColumn && currentPlayer() == Player.WHITE) {
-                    player = Player.WHITE;
-                    setNextPlayer(player);
-                    System.out.println("Player is " + currentPlayer() + " You can't move in the same spot");
-                    return false;
-                }
-
-
-                if(board[move.fromRow][move.fromColumn].player() == Player.WHITE) {
-                    if(board[move.toRow][move.toColumn] == null) {
-                        player = Player.WHITE;
-                        setNextPlayer(player);
-                        System.out.println("Player is " + currentPlayer() + " Can't jump your own piece");
                     }
-                    else if(board[move.toRow][move.toColumn].player() == Player.WHITE) {
-                        player = Player.WHITE;
-                        setNextPlayer(player);
-                        System.out.println("Player is " + currentPlayer() + " Can't jump your own piece");
-                        return false;
+                    //Vertical Movement Scan Loop
+                    if(move.fromRow == move.toRow && move.fromColumn != move.toColumn) {
+
+                    }
+                    //Diagonal Movement Scan Loop
+                    if(move.fromRow != move.toRow && move.fromColumn != move.toColumn) {
+
                     }
                 }
 
-                if (board[move.fromRow][move.fromColumn] != null && currentPlayer() == Player.WHITE) {
-                    if (board[move.fromRow][move.fromColumn].isValidMove(move, board) && currentPlayer() == Player.WHITE) {
-                        //
-                        player = Player.BLACK;
-
-                        /*********************************************************
-                         * Since white always goes first the undo move button
-                         * will store moves as 0 and all ints even(move % 2 == 0)
-                         ********************************************************/
-                        fromMoveRow.add(move.fromRow);
-                        fromMoveCol.add(move.fromColumn);
-                        toMoveRow.add(move.toRow);
-                        toMoveCol.add(move.toColumn);
-                        pieceMemory.add(board[move.fromRow][move.fromColumn].type());
-
-
-
-
-                        System.out.println("Player is " + currentPlayer() + " Valid move, carry on");
-                        return true;
-                    }
-                }
-
-                break;
-
-            case BLACK:
-                if(board[move.fromRow][move.fromColumn].player() == Player.WHITE){
-                    System.out.println("Can't move Black yet");
-                    return false;
-                }
-
-
-                if (move.fromRow == move.toRow && move.fromColumn == move.toColumn && currentPlayer() == Player.BLACK) {
-                    player = Player.BLACK;
-                    setNextPlayer(player);
-                    System.out.println("Player is " + currentPlayer() + " You can't move in the same spot");
-                    return false;
-                }
-
-
-                if(board[move.fromRow][move.fromColumn].player() == Player.BLACK) {
-                    if(board[move.toRow][move.toColumn] == null) {
-                        player = Player.BLACK;
-                        setNextPlayer(player);
-                        System.out.println("Player is " + currentPlayer() + " Can't jump your own piece");
-                    }
-                    else if(board[move.toRow][move.toColumn].player() == Player.BLACK) {
-                        //FIXME: implement better checking, ie: wBishop jumping over wPawn
-                        player = Player.BLACK;
-                        setNextPlayer(player);
-                        System.out.println("Player is " + currentPlayer() + " Can't jump your own piece");
-                        return false;
-                    }
-                }
-
-                if (board[move.fromRow][move.fromColumn] != null && currentPlayer() == Player.BLACK) {
-                    if (board[move.fromRow][move.fromColumn].isValidMove(move, board) && currentPlayer() == Player.BLACK) {
-
-                        player = Player.WHITE;
-
-                        System.out.println("Player is " + currentPlayer() + " Valid move, carry on");
-                        fromMoveRow.add(move.fromRow);
-                        fromMoveCol.add(move.fromColumn);
-                        toMoveRow.add(move.toRow);
-                        toMoveCol.add(move.toColumn);
-                        pieceMemory.add(board[move.fromRow][move.fromColumn].type());
-
-                        return true;
-                    }
-                }
-
-                break;
+            }else {
+                return false;
+            }
         }
+
+        //Statements needed for undoButton and inCheck methods
+        fromMoveRow.add(move.fromRow);
+        fromMoveCol.add(move.fromColumn);
+        toMoveRow.add(move.toRow);
+        toMoveCol.add(move.toColumn);
+        pieceMemory.add(board[move.fromRow][move.fromColumn].type() + " " + board[move.fromRow][move.fromColumn].player());
 
         return false;
     }
@@ -284,6 +247,7 @@ public class ChessModel implements IChessModel {
 
 
     }
+    //Fixme: undoButton changes player to black pawn if first move
 
 
     /************************************************************************************************************
@@ -294,50 +258,25 @@ public class ChessModel implements IChessModel {
      * @return
      ***********************************************************************************************************/
     public boolean inCheck(Player p) {
-        //Find king
-
+        //Fixme: All pieces work BUT Knights need some work
+        //Fixme: store type and location of checking piece
+        //Fixme: rewrite code:
+                //Scan King for exposed pieces, if exposed piece is a validMove for the chess type store the data and return boolean statement
+                //Check if a knight has "reach" by using isValidMove() with moves a knight can do if it were at a kings location
+                    //isValidMove needs algorithim for array bounds to not cause IndexOutOfBoundsException. Possibly recursive
         int kingRow = 0;
         int kingCol = 0;
-        System.out.println(p);
-        boolean knightFound = false;
-        boolean twoKnight = false;
-        int[] knightLocation = new int[2];
-        int[] knightTwoLocation = new int[2];
-
-
 
         for(int r = 0; r < numRows(); r++) {
             for(int c = 0; c < numColumns(); c++) {
                 if(board[r][c] != null) {
-                    if (board[r][c].type().contains("W19Project3GIVETOSTUDENTS.King") && board[r][c].player() != currentPlayer()) {
+                    if (board[r][c].type().contains("W19Project3GIVETOSTUDENTS.King") && board[r][c].player() == p) {
                         kingRow = r;
                         kingCol = c;
 
                     }
-                    if(board[r][c].type().contains("W19Project3GIVETOSTUDENTS.Knight") && board[r][c].player() != currentPlayer()) {
-                        if(!knightFound) {
-                            knightLocation[0] = r;
-                            knightLocation[1] = c;
-                            knightFound = true;
-                        }else {
-                            twoKnight = true;
-                            knightTwoLocation[0] = r;
-                            knightTwoLocation[1] = c;
-                        }
-                    }
 
-                }
-            }
-        }
-        int arrayIndex = toMoveRow.size() - 1;
-        if(pieceMemory.get(arrayIndex).contains("Knight")) {
-            if(board[toMoveCol.get(arrayIndex)][toMoveCol.get(arrayIndex)] != null) {
-                if (board[toMoveCol.get(arrayIndex)][toMoveCol.get(arrayIndex)].player() != currentPlayer()) {
-                    Knight knight = new Knight(p);
-                    Move move = new Move(toMoveRow.get(arrayIndex), toMoveCol.get(arrayIndex), kingRow, kingCol);
-                    if (knight.isValidMove(move, board)) {
-                        return true;
-                    }
+
                 }
             }
         }
@@ -345,9 +284,65 @@ public class ChessModel implements IChessModel {
 
         System.out.println("DEBUG kingRow: " + kingRow);
         System.out.println("DEBUG kingCol: " + kingCol);
-        //Checks for knight
+        int[] moveTwo = {2, -2};
+        int[] moveOne = {1, -1};
+        boolean lastMoveFlag = false;
+        //if the last piece moved was a knight or king scan for a check if not ignore knight check
+        if(pieceMemory.get(pieceMemory.size() - 1).contains("KNIGHT")) {
+            lastMoveFlag = true;
+        }
 
+        if(lastMoveFlag) {
+            Move knightmove = null;
+            Move inverseMove = null;
+            //Conditional loop that checks for possible knight moves and validates whether there is an enemy knight present
+            for(int y = 0; y < 2; y++) {
+                for(int x = 0; x < 2; x++) {
 
+                    if(kingRow + moveTwo[x] >= 0 && kingRow + moveTwo[x] <= 7) {
+                        knightmove = new Move(kingRow, kingCol,
+                                moveTwo[x] + kingRow, moveOne[x] + kingCol);
+                        inverseMove = new Move(kingRow, kingCol,
+                                moveOne[x] + kingRow, moveTwo[x] + kingCol);
+
+                    }
+                    if(kingRow + moveOne[x] >= 0 && kingRow + moveOne[x] <= 7) {
+                        knightmove = new Move(kingRow, kingCol,
+                                moveTwo[x] + kingRow, moveOne[x] + kingCol);
+                        inverseMove = new Move(kingRow, kingCol,
+                                moveOne[x] + kingRow, moveTwo[x] + kingCol);
+                    }
+                    if(kingCol + moveTwo[x] >= 0 && kingCol + moveTwo[x] <= 7) {
+                        knightmove = new Move(kingRow, kingCol, moveTwo[x], moveOne[x]);
+                        inverseMove = new Move(kingRow, kingCol,
+                                moveOne[x] + kingRow, moveTwo[x] + kingCol);
+                    }
+                    if(kingCol + moveOne[x] >= 0 && kingCol + moveOne[x] <= 7) {
+                        knightmove = new Move(kingRow, kingCol,
+                                moveTwo[x] + kingRow, moveOne[x] + kingCol);
+                        inverseMove = new Move(kingRow, kingCol,
+                                moveOne[x] + kingRow, moveTwo[x] + kingCol);
+                    }
+                    if(knightmove != null) {
+                        if(isValidMove(knightmove) || isValidMove(inverseMove)) {
+                            if(pieceAt(moveTwo[x] + kingRow, moveOne[x] + kingCol).type().contains("KNIGHT")
+                                    && pieceAt(moveTwo[x] + kingRow, moveOne[x] + kingCol).player() != p)
+                            {
+                                return true;
+                            }
+                            if(pieceAt(moveOne[x] + kingRow, moveTwo[x] + kingCol).player() != p
+                                    && pieceAt(moveOne[x] + kingRow, moveTwo[x] + kingCol).type().contains("KNIGHT"))
+                            {
+                                return true;
+
+                            }
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        }
 
 
         //Begins scanning different tiles near the king and expand to check each piece if it can kill the king
@@ -368,7 +363,7 @@ public class ChessModel implements IChessModel {
                 if(row < 0 || row > 7 || col < 0 || col > 7) {
                     break;
                 }else {
-                    if(board[row][col] != null) {
+                    if(board[row][col] != null && board[row][col].player() != p) {
                         /************************************************************************************
                          * isValidMove() is scanned if it matches a enemy piece and has the ability to attack
                          ***********************************************************************************/
@@ -494,11 +489,83 @@ public class ChessModel implements IChessModel {
      * @param column
      * @param piece
      ****************************************************************************************/
+
     public void setPiece(int row, int column, IChessPiece piece) {
         board[row][column] = piece;
     }
 
+    /**
+     * Used when the vs Computer button is selected in order to properly use the ai method which requires a clean slate
+     * in order for the conditionals to be properly executed
+     */
+    public void aiBoard() {
+        player = Player.WHITE;
+        setNextPlayer(player);
+        board = new IChessPiece[8][8];
+
+        board[7][0] = new Rook(Player.WHITE);
+        board[7][1] = new Knight(Player.WHITE);
+        board[7][2] = new Bishop(Player.WHITE);
+        board[7][3] = new Queen(Player.WHITE);
+        board[7][4] = new King(Player.WHITE);
+        board[7][5] = new Bishop(Player.WHITE);
+        board[7][6] = new Knight(Player.WHITE);
+        board[7][7] = new Rook(Player.WHITE);
+
+        board[0][0] = new Rook(Player.BLACK);
+        board[0][1] = new Knight(Player.BLACK);
+        board[0][2] = new Bishop(Player.BLACK);
+        board[0][3] = new Queen(Player.BLACK);
+        board[0][4] = new King(Player.BLACK);
+        board[0][5] = new Bishop(Player.BLACK);
+        board[0][6] = new Knight(Player.BLACK);
+        board[0][7] = new Rook(Player.BLACK);
+
+        //Loop to place pawns cuz lazy
+        for(int i = 0; i < 16; i++) {
+            if(i < 8) {
+                //White pawns
+                board[6][i] = new Pawn(Player.WHITE);
+                //Black pawns
+            } else {
+                board[1][i - 8] = new Pawn(Player.BLACK);
+            }
+        }
+    }
+    /***
+     * A simple AI that moves for black chess pieces clicked on is recursive in nature until game over
+     * @author Chase Johnston
+     */
     public void AI() {
+        //Fixme: write a simple AI to play for black chess pieces
+        System.out.println("DEBUG: Black players are now operated by a computer ");
+
+        Random rand = new Random();
+        //Obj responsible for intitiating first pawn move, 50/50 first move is double spaced
+
+        Random pawnChoose = new Random();
+        int pawnNum = pawnChoose.nextInt(8) + 1;
+
+        //Fixme: inCheck bugs
+        //Fixme: post early strat
+        //Fixme: defensive moves
+        //Fixme: Implement reactionary triggers ie: protect king away from check if you can protecc or attack a offending piece
+        //NOTE: ai chooses attack or defense based on a 50/50 chance
+        //Conditionals looped each move the black
+        if(player == player.BLACK && inCheck(player.BLACK)) {
+            //FIXME: Implement something to store data about what pieces were attacking in
+        } else {
+            //Attacking
+            if(rand.nextInt(2) == 1) {
+
+            }
+            //Defending
+            else {
+
+            }
+        }
+
+
         /*
          * Write a simple AI set of rules in the following order.
          * a. Check to see if you are in check.
@@ -509,6 +576,7 @@ public class ChessModel implements IChessModel {
          *		ii. Perhaps you have won the game.
          *
          *c. Determine if any of your pieces are in danger,
+
          *		i. Move them if you can.
          *		ii. Attempt to protect that piece.
          *
@@ -517,4 +585,26 @@ public class ChessModel implements IChessModel {
          */
 
     }
+
+    /**
+     * The moves that the ai will take if something obvious happens such as you being in check or an ability to
+     * sacrifice a piece of yours to protect king.
+     */
+    public void reflexAIMoves(String caseName) {
+
+    }
+
+    /**
+     * A constructor specifically for testing scenarios by giving a blank board for piece placement
+     * ie: checking all moves for the inCheck method properly finds potential knight pieces
+     */
+    public void blankBoard() {
+        for(int y = 0; y < 8; y++) {
+            for(int x = 0; x < 8; x++) {
+                board[y][x] = null;
+            }
+        }
+    }
+
+
 }
